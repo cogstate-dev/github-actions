@@ -18,6 +18,11 @@ runs:
   using: 'composite'
   steps:
     - run: |
+        write-host ${{ inputs.NUGET_PUBLISH }}
+        write-host ${{ inputs.NUGET_SOURCE }}
+        write-host ${{ inputs.NUGET_LIBRARY }}
+        write-host "${{ github.workspace }}\nuget.config"
+        test-path ..\..\scripts\set-nugetfeeds.ps1
         ..\..\scripts\set-nugetfeeds.ps1 -nugetPublish ${{ inputs.NUGET_PUBLISH }} -nugetSource ${{ inputs.NUGET_SOURCE }} -nugetLibrary ${{ inputs.NUGET_LIBRARY }} -nugetApiKey ${{ inputs.PROGET_API_KEY }} -nugetConfigFullPath "${{ github.workspace }}\nuget.config"
       shell: |
         pwsh -noninteractive -command "try { $ErrorActionPreference='Stop'; . '{0}' } catch { Write-Error ""FAILED: $_""; throw; } if ((Test-Path -LiteralPath variable:\LASTEXITCODE)) { exit $LASTEXITCODE }"
