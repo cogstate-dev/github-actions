@@ -1,0 +1,80 @@
+name: 'Set Branch Variables'
+description: 'Set up variables based on branch names'
+inputs:
+  branch-name:
+    description: 'The name of the branch'
+    required: true
+outputs:
+  version: ${{ steps.set-vars.outputs.version }}
+  build-type: ${{ steps.set-vars.outputs.build-type }}
+  build-config: ${{ steps.set-vars.outputs.build-config }}
+  nuget-publish: ${{ steps.set-vars.outputs.nuget-publish }}
+  nuget-source: ${{ steps.set-vars.outputs.nuget-source }}
+  nuget-library: ${{ steps.set-vars.outputs.nuget-library }}
+runs:
+  using: 'composite'
+  steps:
+    - name: Set Branch Variables
+      shell: bash
+      run: |
+        BRANCH_NAME="${{ inputs.branch-name }}"
+        if [[ $BRANCH_NAME == *"feature"* ]]; then
+          echo "BUILD_TYPE=dev" >> $GITHUB_ENV
+          echo "BUILD_CONFIG=Debug" >> $GITHUB_ENV
+          echo "NUGET_PUBLISH=https://proget.cogstate.com/nuget/cogstate-releases-dev/" >> $GITHUB_ENV
+          echo "NUGET_SOURCE=https://proget.cogstate.com/nuget/nuget-dev/" >> $GITHUB_ENV
+          echo "NUGET_LIBRARY=https://proget.cogstate.com/nuget/cogstate-library-nuget-dev/" >> $GITHUB_ENV
+
+          # Extract version from branch name
+          version=$(echo $BRANCH_NAME | sed -n 's/.*\(\d\+\.\d\+\.\d\+\).*/\1/p')
+          preversion="${version}-dev.${GITHUB_RUN_NUMBER}${GITHUB_RUN_ATTEMPT}"
+          echo "version=${preversion}" >> $GITHUB_ENV
+          echo "build-config=Debug" >> $GITHUB_ENV
+          echo "build-type=dev" >> $GITHUB_ENV
+          echo "nuget-publish=https://proget.cogstate.com/nuget/cogstate-releases-dev/" >> $GITHUB_ENV
+          echo "nuget-source=https://proget.cogstate.com/nuget/nuget-dev/" >> $GITHUB_ENV
+          echo "nuget-library=https://proget.cogstate.com/nuget/cogstate-library-nuget-dev/" >> $GITHUB_ENV
+        elif [[ $BRANCH_NAME == *"release"* ]]; then
+          # Extract version from branch name
+          version=$(echo $BRANCH_NAME | sed -n 's/.*\(\d\+\.\d\+\.\d\+\).*/\1/p')
+          preversion="${version}-rc.${GITHUB_RUN_NUMBER}${GITHUB_RUN_ATTEMPT}"
+          echo "version=${preversion}" >> $GITHUB_ENV
+          echo "build-config=Release" >> $GITHUB_ENV
+          echo "build-type=rc" >> $GITHUB_ENV
+          echo "nuget-publish=https://proget.cogstate.com/nuget/cogstate-releases-candidate/" >> $GITHUB_ENV
+          echo "nuget-source=https://proget.cogstate.com/nuget/nuget-approved/" >> $GITHUB_ENV
+          echo "nuget-library=https://proget.cogstate.com/nuget/cogstate-library-nuget/" >> $GITHUB_ENV
+        fi
+
+
+
+Usage, saving for application:
+
+jobs:
+  set_branch_vars:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.set-vars.outputs.version }}
+      build-type: ${{ steps.set-vars.outputs.build-type }}
+      build-config: ${{ steps.set-vars.outputs.build-config }}
+      nuget-publish: ${{ steps.set-vars.outputs.nuget-publish }}
+      nuget-source: ${{ steps.set-vars.outputs.nuget-source }}
+      nuget-library: ${{ steps.set-vars.outputs.nuget-library }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set Branch Variables
+        id: set-vars
+        uses: cogstate-dev/github-actions/.github/Composite-Actions/set-branch-variables@main
+        with:
+          branch-name: ${{ github.event.ref }}
+
+      - name: Display Outputs
+        run: |
+          echo "Version: ${{ steps.set-vars.outputs.version }}"
+          echo "Build Type: ${{ steps.set-vars.outputs.build-type }}"
+          echo "Build Config: ${{ steps.set-vars.outputs.build-config }}"
+          echo "Nuget Publish: ${{ steps.set-vars.outputs.nuget-publish }}"
+          echo "Nuget Source: ${{ steps.set-vars.outputs.nuget-source }}"
+          echo "Nuget Library: ${{ steps.set-vars.outputs.nuget-library }}"
