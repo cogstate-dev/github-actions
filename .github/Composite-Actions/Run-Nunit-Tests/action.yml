@@ -1,0 +1,16 @@
+name: 'Run Unit Tests'
+description: 'Runs unit tests using NUnit.'
+inputs:
+  NUGET_SOURCE:
+    description: 'NuGet source setting.'
+    required: true
+  PROGET_API_KEY:
+    description: 'API key for NuGet.'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - run: |
+        .\scripts\run-nunit.ps1 -nunitExpression "cat == Unit||cat == Test_Unit" -nugetConfigFullPath "$PWD\nuget.config" -nunitAppConfigFile "Cogstate.Platform/Cogstate.Tests.WebApi/App.config" -testFileFilterPattern "Cogstate.*.Test.dll" -testFileFolderFilter "*bin" -nugetSource ${{ inputs.NUGET_SOURCE }} -nugetApiKey ${{ inputs.PROGET_API_KEY }}
+      shell: |
+        pwsh -noninteractive -command "try {{ $ErrorActionPreference='Stop'; . '{0}' }} catch {{ Write-Error ""FAILED: $_""; throw; }} if ((Test-Path -LiteralPath variable:\LASTEXITCODE)) {{ exit $LASTEXITCODE }}"
