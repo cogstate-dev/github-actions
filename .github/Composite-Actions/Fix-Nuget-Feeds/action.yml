@@ -29,7 +29,7 @@ runs:
         # test-path ${{ github.action_path }}/../../../Powershell/Scripts
 
         # write-output "setting location"
-        # set-location ${{ github.action_path }}/../../../Powershell/Scripts
+        set-location ${{ github.action_path }}/../../../Powershell/Scripts
 
         # write-output "doing a GCI"
         # get-childitem .\
