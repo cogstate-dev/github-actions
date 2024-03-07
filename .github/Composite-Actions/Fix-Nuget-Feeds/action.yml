@@ -17,16 +17,12 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Set working directory
+    - name: test then run set-nugetfeeds.ps1
       run: |
         test-path ${{ github.action_path }}/../../../Powershell/Scripts
         set-location ${{ github.action_path }}/../../../Powershell/Scripts
-      shell: pwsh
-
-    - name: Check PowerShell script existence
-      run: |
-        $scriptPath = "./set-nugetfeeds.ps1"
-        if (Test-Path $scriptPath) {
+        get-childitem .\
+        if (Test-Path .\set-nugetfeeds.ps1) {
             # Script exists, proceed with execution
             . $scriptPath -nugetPublish $env:NUGET_PUBLISH -nugetSource $env:NUGET_SOURCE -nugetLibrary $env:NUGET_LIBRARY -nugetApiKey $env:PROGET_API_KEY -nugetConfigFullPath "$PWD\nuget.config"
         } else {
