@@ -17,6 +17,10 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - name: Set working directory
+      run: cd ${{ github.workspace }}/.github/Composite-Actions/Fix-Nuget-Feeds
+      shell: pwsh
+      
     - name: Check PowerShell script existence
       run: |
         $scriptPath = ".\powershell\scripts\set-nugetfeeds.ps1"
