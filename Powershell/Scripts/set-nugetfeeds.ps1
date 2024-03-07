@@ -22,6 +22,9 @@ param (
 $ErrorActionPreference= 'Stop'
 
 # Clean out all nuget configs
+write-debug -Debug "doing a GCI to remove existing nuget.configs"
+Get-ChildItem -Recurse -Filter "nuget.config"
+write-debug -Debug "Removing"
 Get-ChildItem -Recurse -Filter "nuget.config" | ForEach-Object {
     if (Test-Path $_.FullName) {
             write-output "removing $_.fullname"
@@ -31,6 +34,7 @@ Get-ChildItem -Recurse -Filter "nuget.config" | ForEach-Object {
 
 # Create a simple nuget.config pointing to the proper proget feed
 # Creating config content block
+write-debug -Debug "setting content config block"
 $configContent = 
 @"
 <?xml version="1.0" encoding="utf-8"?>
@@ -47,18 +51,23 @@ $configContent =
 </configuration>
 "@
 
+write-debug -Debug "writing block to a config path"
 # Setting nuget config with content block
 $configContent | Set-Content -Path $nugetConfigFullPath
 
 # Update NuGet sources
+write-debug -Debug "nuget source update proget"
 nuget.exe source update -ConfigFile "$nugetConfigFullPath" -Name proget -Username api -Password $nugetApiKey  
-nuget.exe  source update -ConfigFile "$nugetConfigFullPath" -Name proget-lib -Username api -Password $nugetApiKey  
+write-debug -Debug "nuget source update proget-lib"
+nuget.exe  source update -ConfigFile "$nugetConfigFullPath" -Name proget-lib -Username api -Password $nugetApiKey
+write-debug -Debug "nuget source update proget-deployable"
 nuget.exe  source update -ConfigFile "$nugetConfigFullPath" -Name proget-deployable -Username api -Password $nugetApiKey  
 
+write-debug -Debug "display nuget sources detailed verbosity"
 # Display NuGet sources with detailed verbosity
 nuget.exe  source -Verbosity detailed
 
-
+write-debug -Debug "nuget restore"
 # Nuget Restore
 nuget.exe restore Cogstate.Platform\Cogstate.Platform.sln -force -recursive -ConfigFile .\nuget.config -Verbosity detailed
 
