@@ -29,7 +29,7 @@ runs:
         # test-path ${{ github.action_path }}/../../../Powershell/Scripts
 
         # write-output "setting location"
-        set-location ${{ github.action_path }}/../../../Powershell/Scripts
+        #set-location ${{ github.action_path }}/../../../Powershell/Scripts
 
         # write-output "doing a GCI"
         # get-childitem .\
@@ -41,7 +41,7 @@ runs:
         # nuget.exe help 
 
         # write-output "trying run on set-nugetfeeds.ps1
-        .\set-nugetfeeds.ps1 -nugetPublish "${{ inputs.NUGET_PUBLISH }}" -nugetSource "${{ inputs.NUGET_SOURCE }}" -nugetLibrary "${{ inputs.NUGET_LIBRARY }}" -nugetApiKey "${{ inputs.PROGET_API_KEY }}" -nugetConfigFullPath "${{ github.workspace }}\nuget.config"
+        ${{ github.action_path }}/../../../Powershell/Scripts\set-nugetfeeds.ps1 -nugetPublish "${{ inputs.NUGET_PUBLISH }}" -nugetSource "${{ inputs.NUGET_SOURCE }}" -nugetLibrary "${{ inputs.NUGET_LIBRARY }}" -nugetApiKey "${{ inputs.PROGET_API_KEY }}" -nugetConfigFullPath "${{ github.workspace }}\nuget.config"
       shell: |
         pwsh -noninteractive -command "try {{ $ErrorActionPreference='Stop'; . '{0}' }} catch {{ Write-Error ""FAILED: $_""; throw; }} if ((Test-Path -LiteralPath variable:\LASTEXITCODE)) {{ exit $LASTEXITCODE }}"
 
