@@ -19,6 +19,7 @@ param (
     [string]
     $nugetConfigFullPath = "$pwd\nuget.config"
 )
+write-output "setting error action preference to stop"
 $ErrorActionPreference= 'Stop'
 
 # Clean out all nuget configs
