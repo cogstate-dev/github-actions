@@ -27,16 +27,12 @@ runs:
         get-childitem .\
         write-output "doing a test-path on the .\set-nugetfeeds.ps1"
         test-path .\set-nugetfeeds.ps1
-        write-output "if statement to test the path then run the set-nugetfeeds.ps1"
-        if (Test-Path .\set-nugetfeeds.ps1) {
-            # Script exists, proceed with execution
-            .\set-nugetfeeds.ps1 -nugetPublish $env:NUGET_PUBLISH -nugetSource $env:NUGET_SOURCE -nugetLibrary $env:NUGET_LIBRARY -nugetApiKey $env:PROGET_API_KEY -nugetConfigFullPath "${{ github.workspace }}\\nuget.config"
-        } else {
-            Write-Error "PowerShell script not found in $pwd"
-        }
+        # write-output "trying run on set-nugetfeeds.ps1
+        #     .\set-nugetfeeds.ps1 -nugetPublish $env:NUGET_PUBLISH -nugetSource $env:NUGET_SOURCE -nugetLibrary $env:NUGET_LIBRARY -nugetApiKey $env:PROGET_API_KEY -nugetConfigFullPath "${{ github.workspace }}\\nuget.config"
+
       shell: pwsh
 
-    # - run: |
-    #     ./Powershell/scripts/set-nugetfeeds.ps1 -nugetPublish ${{ inputs.NUGET_PUBLISH }} -nugetSource ${{ inputs.NUGET_SOURCE }} -nugetLibrary ${{ inputs.NUGET_LIBRARY }} -nugetApiKey ${{ inputs.PROGET_API_KEY }} -nugetConfigFullPath "${{ github.workspace }}\nuget.config"
-    #   shell: |
-    #     pwsh -noninteractive -command "try { $ErrorActionPreference='Stop'; . '{0}' } catch { Write-Error ""FAILED: $_""; throw; } if ((Test-Path -LiteralPath variable:\LASTEXITCODE)) { exit $LASTEXITCODE }"
+    - run: |
+        . ${{ github.action_path }}/../../../Powershell/Scripts/Powershell/scripts/set-nugetfeeds.ps1 -nugetPublish ${{ inputs.NUGET_PUBLISH }} -nugetSource ${{ inputs.NUGET_SOURCE }} -nugetLibrary ${{ inputs.NUGET_LIBRARY }} -nugetApiKey ${{ inputs.PROGET_API_KEY }} -nugetConfigFullPath "${{ github.workspace }}\nuget.config"
+      shell: |
+        pwsh -noninteractive -command "try { $ErrorActionPreference='Stop'; . '{0}' } catch { Write-Error ""FAILED: $_""; throw; } if ((Test-Path -LiteralPath variable:\LASTEXITCODE)) { exit $LASTEXITCODE }"
