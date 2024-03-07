@@ -19,13 +19,13 @@ runs:
   steps:
     - name: Set working directory
       run: |
-        gci ${{ github.action_path }}/../../.. -recurse
+        test-location ${{ github.action_path }}/../../..Powershell/Scripts
+        set-location ${{ github.action_path }}/../../..Powershell/Scripts
       shell: pwsh
 
     - name: Check PowerShell script existence
       run: |
-        $scriptPath = "${{ github.action_path }}/../../../powershell/scripts/set-nugetfeeds.ps1"
-        get-childitem -recurse -directory
+        $scriptPath = "./set-nugetfeeds.ps1"
         if (Test-Path $scriptPath) {
             # Script exists, proceed with execution
             . $scriptPath -nugetPublish $env:NUGET_PUBLISH -nugetSource $env:NUGET_SOURCE -nugetLibrary $env:NUGET_LIBRARY -nugetApiKey $env:PROGET_API_KEY -nugetConfigFullPath "$PWD\nuget.config"
