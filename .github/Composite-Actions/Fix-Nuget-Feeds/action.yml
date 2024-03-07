@@ -19,7 +19,7 @@ runs:
   steps:
     - name: Set working directory
       run: |
-        gci ${{ github.action_path } -recurse -directory
+        gci ${{ github.action_path }} -recurse -directory
       shell: pwsh
 
     - name: Check PowerShell script existence
