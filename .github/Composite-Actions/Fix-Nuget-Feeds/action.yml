@@ -46,6 +46,8 @@ runs:
 
     - name: running the whole powershell script inline to see if it will work. 
       run: |
+        $nugetConfigFullPath = "$pwd\nuget.config"
+        write-output " nuget config full path $nugetConfigFullPath"
         write-output "setting error action preference to stop"
         $ErrorActionPreference= 'Stop'
 
