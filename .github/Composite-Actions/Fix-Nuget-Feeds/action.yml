@@ -17,12 +17,19 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Debug Command
-      run: gci ./
-      #run: test-path ../../../Powershell/scripts/set-nugetfeeds.ps1
+    - name: Check PowerShell script existence
+      run: |
+        $scriptPath = ".\powershell\scripts\set-nugetfeeds.ps1"
+
+        if (Test-Path $scriptPath) {
+            # Script exists, proceed with execution
+            . $scriptPath -nugetPublish $env:NUGET_PUBLISH -nugetSource $env:NUGET_SOURCE -nugetLibrary $env:NUGET_LIBRARY -nugetApiKey $env:PROGET_API_KEY -nugetConfigFullPath "$PWD\nuget.config"
+        } else {
+            Write-Error "PowerShell script not found at $scriptPath"
+        }
       shell: pwsh
 
-    - run: |
-        ../../../Powershell/scripts/set-nugetfeeds.ps1 -nugetPublish ${{ inputs.NUGET_PUBLISH }} -nugetSource ${{ inputs.NUGET_SOURCE }} -nugetLibrary ${{ inputs.NUGET_LIBRARY }} -nugetApiKey ${{ inputs.PROGET_API_KEY }} -nugetConfigFullPath "${{ github.workspace }}\nuget.config"
-      shell: |
-        pwsh -noninteractive -command "try { $ErrorActionPreference='Stop'; . '{0}' } catch { Write-Error ""FAILED: $_""; throw; } if ((Test-Path -LiteralPath variable:\LASTEXITCODE)) { exit $LASTEXITCODE }"
+    # - run: |
+    #     ./Powershell/scripts/set-nugetfeeds.ps1 -nugetPublish ${{ inputs.NUGET_PUBLISH }} -nugetSource ${{ inputs.NUGET_SOURCE }} -nugetLibrary ${{ inputs.NUGET_LIBRARY }} -nugetApiKey ${{ inputs.PROGET_API_KEY }} -nugetConfigFullPath "${{ github.workspace }}\nuget.config"
+    #   shell: |
+    #     pwsh -noninteractive -command "try { $ErrorActionPreference='Stop'; . '{0}' } catch { Write-Error ""FAILED: $_""; throw; } if ((Test-Path -LiteralPath variable:\LASTEXITCODE)) { exit $LASTEXITCODE }"
