@@ -17,7 +17,7 @@ param (
     $nugetApiKey,
     [parameter()]
     [string]
-    $nugetConfigFullPath = "$pwd\nuget.config"
+    $nugetConfigFullPath = "$env:GITHUB_WORKSPACE\nuget.config"
 )
 write-output "setting error action preference to stop"
 
@@ -67,4 +67,4 @@ nuget.exe  source -Verbosity detailed
 
 write-output "nuget restore"
 # Nuget Restore
-nuget.exe restore Cogstate.Platform\Cogstate.Platform.sln -force -recursive -ConfigFile .\nuget.config -Verbosity detailed
+nuget.exe restore Cogstate.Platform\Cogstate.Platform.sln -force -recursive -ConfigFile $nugetConfigFullPath -Verbosity detailed
