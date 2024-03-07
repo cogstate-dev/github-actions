@@ -19,13 +19,12 @@ runs:
   steps:
     - name: Set working directory
       run: |
-        Set-Location -Path ${{ github.workspace }}/.github/Composite-Actions/Fix-Nuget-Feeds
-        gci -directory
+        gci ${{ github.action_path } -recurse -directory
       shell: pwsh
 
     - name: Check PowerShell script existence
       run: |
-        $scriptPath = ".\powershell\scripts\set-nugetfeeds.ps1"
+        $scriptPath = "${{ github.action_path }\powershell\scripts\set-nugetfeeds.ps1"
         get-childitem -recurse -directory
         if (Test-Path $scriptPath) {
             # Script exists, proceed with execution
