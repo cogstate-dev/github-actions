@@ -40,6 +40,6 @@ runs:
         write-output "testing a nuget.exe help to validate it's in the path"
         nuget.exe help 
 
-        # write-output "trying run on set-nugetfeeds.ps1
+        write-output "trying run on set-nugetfeeds.ps1
         # .\set-nugetfeeds.ps1 -nugetPublish "${{ inputs.NUGET_PUBLISH }}" -nugetSource "${{ inputs.NUGET_SOURCE }}" -nugetLibrary "${{ inputs.NUGET_LIBRARY }}" -nugetApiKey "${{ inputs.PROGET_API_KEY }}" -nugetConfigFullPath "${{ github.workspace }}\nuget.config"
       shell: pwsh
