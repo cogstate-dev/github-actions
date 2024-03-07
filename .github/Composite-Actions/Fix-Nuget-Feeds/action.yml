@@ -19,7 +19,7 @@ runs:
   steps:
     - name: Set working directory
       run: |
-        test-location ${{ github.action_path }}/../../..Powershell/Scripts
+        test-path ${{ github.action_path }}/../../..Powershell/Scripts
         set-location ${{ github.action_path }}/../../..Powershell/Scripts
       shell: pwsh
 
