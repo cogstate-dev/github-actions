@@ -31,6 +31,6 @@ runs:
         write-output "doing a test-path on the .\set-nugetfeeds.ps1"
         test-path .\set-nugetfeeds.ps1
 
-        write-output "trying run on set-nugetfeeds.ps1
-        .\set-nugetfeeds.ps1 -nugetPublish "${{ inputs.NUGET_PUBLISH }}" -nugetSource "${{ inputs.NUGET_SOURCE }}" -nugetLibrary "${{ inputs.NUGET_LIBRARY }}" -nugetApiKey "${{ inputs.PROGET_API_KEY }}" -nugetConfigFullPath "${{ github.workspace }}\nuget.config"
+#        write-output "trying run on set-nugetfeeds.ps1
+#        .\set-nugetfeeds.ps1 -nugetPublish "${{ inputs.NUGET_PUBLISH }}" -nugetSource "${{ inputs.NUGET_SOURCE }}" -nugetLibrary "${{ inputs.NUGET_LIBRARY }}" -nugetApiKey "${{ inputs.PROGET_API_KEY }}" -nugetConfigFullPath "${{ github.workspace }}\nuget.config"
       shell: pwsh
