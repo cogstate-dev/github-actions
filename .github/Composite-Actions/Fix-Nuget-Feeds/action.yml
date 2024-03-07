@@ -25,22 +25,22 @@ runs:
 
     - name: test then run set-nugetfeeds.ps1
       run: |
-        write-output "test-path of relative path"
-        test-path ${{ github.action_path }}/../../../Powershell/Scripts
+        # write-output "test-path of relative path"
+        # test-path ${{ github.action_path }}/../../../Powershell/Scripts
 
-        write-output "setting location"
-        set-location ${{ github.action_path }}/../../../Powershell/Scripts
+        # write-output "setting location"
+        # set-location ${{ github.action_path }}/../../../Powershell/Scripts
 
-        write-output "doing a GCI"
-        get-childitem .\
+        # write-output "doing a GCI"
+        # get-childitem .\
 
-        write-output "doing a test-path on the .\set-nugetfeeds.ps1"
-        test-path .\set-nugetfeeds.ps1
+        # write-output "doing a test-path on the .\set-nugetfeeds.ps1"
+        # test-path .\set-nugetfeeds.ps1
 
-        write-output "testing a nuget.exe help to validate it's in the path"
-        nuget.exe help 
+        # write-output "testing a nuget.exe help to validate it's in the path"
+        # nuget.exe help 
 
-        write-output "trying run on set-nugetfeeds.ps1
+        # write-output "trying run on set-nugetfeeds.ps1
         .\set-nugetfeeds.ps1 -nugetPublish "${{ inputs.NUGET_PUBLISH }}" -nugetSource "${{ inputs.NUGET_SOURCE }}" -nugetLibrary "${{ inputs.NUGET_LIBRARY }}" -nugetApiKey "${{ inputs.PROGET_API_KEY }}" -nugetConfigFullPath "${{ github.workspace }}\nuget.config"
       shell: |
         pwsh -noninteractive -command "try {{ $ErrorActionPreference='Stop'; . '{0}' }} catch {{ Write-Error ""FAILED: $_""; throw; }} if ((Test-Path -LiteralPath variable:\LASTEXITCODE)) {{ exit $LASTEXITCODE }}"
