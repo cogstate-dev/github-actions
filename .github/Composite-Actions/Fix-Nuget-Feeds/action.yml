@@ -20,6 +20,7 @@ runs:
     - name: Set working directory
       run: |
         Set-Location -Path ${{ github.workspace }}/.github/Composite-Actions/Fix-Nuget-Feeds
+        gci -directory
       shell: pwsh
 
     - name: Check PowerShell script existence
