@@ -18,8 +18,10 @@ runs:
   using: 'composite'
   steps:
     - name: Set working directory
-      run: cd ${{ github.workspace }}/.github/Composite-Actions/Fix-Nuget-Feeds
-      shell: pwsh
+      run: |
+        cd ${{ github.workspace }}/.github/Composite-Actions/Fix-Nuget-Feeds
+      shell: |
+        pwsh -noninteractive -command "try { $ErrorActionPreference='Stop'; . '{0}' } catch { Write-Error ""FAILED: $_""; throw; } if ((Test-Path -LiteralPath variable:\LASTEXITCODE)) { exit $LASTEXITCODE }"
 
     - name: Check PowerShell script existence
       run: |
