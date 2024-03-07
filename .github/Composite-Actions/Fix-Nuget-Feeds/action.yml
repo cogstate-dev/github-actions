@@ -30,7 +30,7 @@ runs:
             Write-Error "PowerShell script not found in $pwd"
         }
       shell: |
-        pwsh -noninteractive -command "try { $ErrorActionPreference='Stop'; . '{0}' } catch { Write-Error ""FAILED: $_""; throw; } if ((Test-Path -LiteralPath variable:\LASTEXITCODE)) { exit $LASTEXITCODE }"
+        pwsh
 
     # - run: |
     #     ./Powershell/scripts/set-nugetfeeds.ps1 -nugetPublish ${{ inputs.NUGET_PUBLISH }} -nugetSource ${{ inputs.NUGET_SOURCE }} -nugetLibrary ${{ inputs.NUGET_LIBRARY }} -nugetApiKey ${{ inputs.PROGET_API_KEY }} -nugetConfigFullPath "${{ github.workspace }}\nuget.config"
