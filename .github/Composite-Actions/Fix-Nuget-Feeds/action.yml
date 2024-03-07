@@ -19,10 +19,15 @@ runs:
   steps:
     - name: test then run set-nugetfeeds.ps1
       run: |
+        write-output "test-path of relative path"
         test-path ${{ github.action_path }}/../../../Powershell/Scripts
+        write-output "setting location"
         set-location ${{ github.action_path }}/../../../Powershell/Scripts
+        write-output "doing a GCI"
         get-childitem .\
+        write-output "doing a test-path on the .\set-nugetfeeds.ps1"
         test-path .\set-nugetfeeds.ps1
+        write-output "if statement to test the path then run the set-nugetfeeds.ps1"
         if (Test-Path .\set-nugetfeeds.ps1) {
             # Script exists, proceed with execution
             .\set-nugetfeeds.ps1 -nugetPublish $env:NUGET_PUBLISH -nugetSource $env:NUGET_SOURCE -nugetLibrary $env:NUGET_LIBRARY -nugetApiKey $env:PROGET_API_KEY -nugetConfigFullPath "${{ github.workspace }}\\nuget.config"
