@@ -23,23 +23,71 @@ runs:
         # nuget-version: '4.6.2'
         nuget-api-key: ${{ inputs.PROGET_API_KEY }}
 
-    - name: test then run set-nugetfeeds.ps1
+    # - name: test then run set-nugetfeeds.ps1
+    #   run: |
+    #     write-output "test-path of relative path"
+    #     test-path ${{ github.action_path }}/../../../Powershell/Scripts
+
+    #     write-output "setting location"
+    #     set-location ${{ github.action_path }}/../../../Powershell/Scripts
+
+    #     write-output "doing a GCI"
+    #     get-childitem .\
+
+    #     write-output "doing a test-path on the .\set-nugetfeeds.ps1"
+    #     test-path .\set-nugetfeeds.ps1
+
+    #     write-output "testing a nuget.exe help to validate it's in the path"
+    #     nuget.exe help 
+
+    #     # write-output "trying run on set-nugetfeeds.ps1
+    #     # .\set-nugetfeeds.ps1 -nugetPublish "${{ inputs.NUGET_PUBLISH }}" -nugetSource "${{ inputs.NUGET_SOURCE }}" -nugetLibrary "${{ inputs.NUGET_LIBRARY }}" -nugetApiKey "${{ inputs.PROGET_API_KEY }}" -nugetConfigFullPath "${{ github.workspace }}\nuget.config"
+    #   shell: pwsh
+
+    - name: running the whole powershell script inline to see if it will work. 
       run: |
-        write-output "test-path of relative path"
-        test-path ${{ github.action_path }}/../../../Powershell/Scripts
+        $ErrorActionPreference= 'Stop'
 
-        write-output "setting location"
-        set-location ${{ github.action_path }}/../../../Powershell/Scripts
+        # Clean out all nuget configs
+        Get-ChildItem -Recurse -Filter "nuget.config" | ForEach-Object {
+            if (Test-Path $_.FullName) {
+                    write-output "removing $_.fullname"
+                    Remove-Item $_.FullName
+                }
+            }
 
-        write-output "doing a GCI"
-        get-childitem .\
+        # Create a simple nuget.config pointing to the proper proget feed
+        # Creating config content block
+        $configContent = 
+        @"
+        <?xml version="1.0" encoding="utf-8"?>
+        <configuration>
+            <packageSources>
+                <clear />
+                <add key="proget" value="${{ inputs.NUGET_SOURCE }}" />
+                <add key="proget-deployable" value="${{ inputs.NUGET_PUBLISH }}" />
+                <add key="proget-lib" value="${{ inputs.NUGET_LIBRARY }}" />
+            </packageSources>
+            <disabledPackageSources>
+                <clear />
+            </disabledPackageSources>
+        </configuration>
+        "@
 
-        write-output "doing a test-path on the .\set-nugetfeeds.ps1"
-        test-path .\set-nugetfeeds.ps1
+        # Setting nuget config with content block
+        $configContent | Set-Content -Path $nugetConfigFullPath
 
-        write-output "testing a nuget.exe help to validate it's in the path"
-        nuget.exe help 
+        # Update NuGet sources
+        nuget.exe source update -ConfigFile "$nugetConfigFullPath" -Name proget -Username api -Password ${{ inputs.PROGET_API_KEY }}  
+        nuget.exe  source update -ConfigFile "$nugetConfigFullPath" -Name proget-lib -Username api -Password ${{ inputs.PROGET_API_KEY }}  
+        nuget.exe  source update -ConfigFile "$nugetConfigFullPath" -Name proget-deployable -Username api -Password ${{ inputs.PROGET_API_KEY }}  
 
-        write-output "trying run on set-nugetfeeds.ps1
-        # .\set-nugetfeeds.ps1 -nugetPublish "${{ inputs.NUGET_PUBLISH }}" -nugetSource "${{ inputs.NUGET_SOURCE }}" -nugetLibrary "${{ inputs.NUGET_LIBRARY }}" -nugetApiKey "${{ inputs.PROGET_API_KEY }}" -nugetConfigFullPath "${{ github.workspace }}\nuget.config"
+        # Display NuGet sources with detailed verbosity
+        nuget.exe  source -Verbosity detailed
+
+
+        # Nuget Restore
+        nuget.exe restore Cogstate.Platform\Cogstate.Platform.sln -force -recursive -ConfigFile .\nuget.config -Verbosity detailed
+
+
       shell: pwsh
