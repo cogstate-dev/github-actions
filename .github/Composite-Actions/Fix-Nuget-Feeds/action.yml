@@ -24,9 +24,9 @@ runs:
         get-childitem .\
         if (Test-Path .\set-nugetfeeds.ps1) {
             # Script exists, proceed with execution
-            . $scriptPath -nugetPublish $env:NUGET_PUBLISH -nugetSource $env:NUGET_SOURCE -nugetLibrary $env:NUGET_LIBRARY -nugetApiKey $env:PROGET_API_KEY -nugetConfigFullPath "$PWD\nuget.config"
+            .\set-nugetfeeds.ps1 -nugetPublish $env:NUGET_PUBLISH -nugetSource $env:NUGET_SOURCE -nugetLibrary $env:NUGET_LIBRARY -nugetApiKey $env:PROGET_API_KEY -nugetConfigFullPath "${{ github.workspace }}\\nuget.config"
         } else {
-            Write-Error "PowerShell script not found at $scriptPath"
+            Write-Error "PowerShell script not found in $pwd"
         }
       shell: pwsh
 
