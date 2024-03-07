@@ -24,7 +24,7 @@ runs:
 
     - name: Check PowerShell script existence
       run: |
-        $scriptPath = "${{ github.action_path }\powershell\scripts\set-nugetfeeds.ps1"
+        $scriptPath = "${{ github.action_path }}\powershell\scripts\set-nugetfeeds.ps1"
         get-childitem -recurse -directory
         if (Test-Path $scriptPath) {
             # Script exists, proceed with execution
