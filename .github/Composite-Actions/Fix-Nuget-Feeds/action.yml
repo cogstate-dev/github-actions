@@ -18,7 +18,7 @@ runs:
   using: 'composite'
   steps:
     - name: Debug Command
-      run: gci ../../..
+      run: gci ./
       #run: test-path ../../../Powershell/scripts/set-nugetfeeds.ps1
       shell: pwsh
 
