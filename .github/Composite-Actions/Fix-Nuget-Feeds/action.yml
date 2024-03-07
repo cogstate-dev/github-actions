@@ -20,7 +20,7 @@ runs:
     - name: Check PowerShell script existence
       run: |
         $scriptPath = ".\powershell\scripts\set-nugetfeeds.ps1"
-        gci .\
+        get-childitem -recurse -directory
         if (Test-Path $scriptPath) {
             # Script exists, proceed with execution
             . $scriptPath -nugetPublish $env:NUGET_PUBLISH -nugetSource $env:NUGET_SOURCE -nugetLibrary $env:NUGET_LIBRARY -nugetApiKey $env:PROGET_API_KEY -nugetConfigFullPath "$PWD\nuget.config"
