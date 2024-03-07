@@ -19,8 +19,7 @@ runs:
   steps:
     - name: Set working directory
       run: cd ${{ github.workspace }}/.github/Composite-Actions/Fix-Nuget-Feeds
-      shell: |
-        pwsh
+      shell: pwsh
 
     - name: Check PowerShell script existence
       run: |
