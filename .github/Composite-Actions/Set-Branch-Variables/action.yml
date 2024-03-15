@@ -4,6 +4,26 @@ inputs:
   branch-name:
     description: 'The name of the branch'
     required: true
+outputs:
+  version:
+    description: "version"
+    value: ${{ steps.set-vars.outputs.version }}
+  build-type:
+    description: "build type"
+    value: ${{ steps.set-vars.outputs.build-type }}
+  build-config:
+    description: "build config"
+    value: ${{ steps.set-vars.outputs.build-config }}
+  nuget-publish:
+    description: "nuget publish feed"
+    value: ${{ steps.set-vars.outputs.nuget-publish }}
+  nuget-source: 
+    description: "nuget source feed"
+    value: ${{ steps.set-vars.outputs.nuget-source }}
+  nuget-library: 
+    description: "nuget library feed"
+    value: ${{ steps.set-vars.outputs.nuget-library }}
+
 runs:
   using: 'composite'
   steps:
