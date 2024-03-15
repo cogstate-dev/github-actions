@@ -1,0 +1,18 @@
+name: 'Set Branch Variables'
+description: 'Set up variables based on branch names'
+inputs:
+  branch-name:
+    description: 'The name of the branch'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout files on agent
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: test then run set-nugetfeeds.ps1
+      run: |
+        ${{ github.action_path }}/../../../Powershell/Scripts\Confirm-PreviousCommitsMerged.ps1
+      shell: |
+        pwsh -noninteractive -command "try {{ $ErrorActionPreference='Stop'; . '{0}' }} catch {{ Write-Error ""FAILED: $_""; throw; }} if ((Test-Path -LiteralPath variable:\LASTEXITCODE)) {{ exit $LASTEXITCODE }}"
