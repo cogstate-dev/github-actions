@@ -1,5 +1,6 @@
 name: 'Run Unit Tests'
 description: 'Runs unit tests using NUnit.'
+author: 'Mike Burgess'
 inputs:
   NUGET_SOURCE:
     description: 'NuGet source setting.'
