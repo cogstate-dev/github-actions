@@ -48,36 +48,3 @@ runs:
        echo "nuget-source=${{ env.NUGET_SOURCE }}" >> $GITHUB_OUTPUT
        echo "nuget-library=${{ env.NUGET_LIBRARY }}" >> $GITHUB_OUTPUT
       shell: bash
-
-
-
-# Usage, saving for application:
-
-# jobs:
-#   set_branch_vars:
-#     runs-on: ubuntu-latest
-#     outputs:
-#       version: ${{ steps.set-vars.outputs.version }}
-#       build-type: ${{ steps.set-vars.outputs.build-type }}
-#       build-config: ${{ steps.set-vars.outputs.build-config }}
-#       nuget-publish: ${{ steps.set-vars.outputs.nuget-publish }}
-#       nuget-source: ${{ steps.set-vars.outputs.nuget-source }}
-#       nuget-library: ${{ steps.set-vars.outputs.nuget-library }}
-#     steps:
-#       - name: Checkout code
-#         uses: actions/checkout@v2
-
-#       - name: Set Branch Variables
-#         id: set-vars
-#         uses: cogstate-dev/github-actions/.github/Composite-Actions/Set-Branch-Variables@feature/DEVOPS-3843
-#         with:
-#           branch-name: ${{ github.event.ref }}
-
-#       - name: Display Outputs
-#         run: |
-#           echo "Version: ${{ steps.set-vars.outputs.version }}"
-#           echo "Build Type: ${{ steps.set-vars.outputs.build-type }}"
-#           echo "Build Config: ${{ steps.set-vars.outputs.build-config }}"
-#           echo "Nuget Publish: ${{ steps.set-vars.outputs.nuget-publish }}"
-#           echo "Nuget Source: ${{ steps.set-vars.outputs.nuget-source }}"
-#           echo "Nuget Library: ${{ steps.set-vars.outputs.nuget-library }}"
