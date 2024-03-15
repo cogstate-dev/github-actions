@@ -4,13 +4,6 @@ inputs:
   branch-name:
     description: 'The name of the branch'
     required: true
-# outputs:
-#   version: ${{ steps.set-vars.outputs.version }}
-#   build-type: ${{ steps.set-vars.outputs.build-type }}
-#   build-config: ${{ steps.set-vars.outputs.build-config }}
-#   nuget-publish: ${{ steps.set-vars.outputs.nuget-publish }}
-#   nuget-source: ${{ steps.set-vars.outputs.nuget-source }}
-#   nuget-library: ${{ steps.set-vars.outputs.nuget-library }}
 runs:
   using: 'composite'
   steps:
@@ -46,7 +39,7 @@ runs:
       shell: bash
 
     - name: Set output variables
-      id: set-vars
+      id: set-vars-composite-action
       run: |
        echo "version=${{ env.preversion }}" >> $GITHUB_OUTPUT  
        echo "build-config=${{ env.BUILD_CONFIG }}" >> $GITHUB_OUTPUT  
@@ -76,7 +69,7 @@ runs:
 
 #       - name: Set Branch Variables
 #         id: set-vars
-#         uses: cogstate-dev/github-actions/.github/Composite-Actions/set-branch-variables@main
+#         uses: cogstate-dev/github-actions/.github/Composite-Actions/Set-Branch-Variables@feature/DEVOPS-3843
 #         with:
 #           branch-name: ${{ github.event.ref }}
 
