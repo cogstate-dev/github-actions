@@ -39,7 +39,7 @@ runs:
       shell: bash
 
     - name: Set output variables
-      id: set-vars-composite-action
+      id: set-vars
       run: |
        echo "version=${{ env.preversion }}" >> $GITHUB_OUTPUT  
        echo "build-config=${{ env.BUILD_CONFIG }}" >> $GITHUB_OUTPUT  
