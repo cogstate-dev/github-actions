@@ -9,7 +9,7 @@ trap
     exit 1
 }
 
-$modulePath = Join-Path $PSScriptRoot "\modules\Version-Control.psm1"
+$modulePath = Join-Path $PSScriptRoot "..\modules\Version-Control.psm1"
 Import-Module $modulePath
 
 VerifyAllGitDirectories
