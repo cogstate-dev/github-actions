@@ -8,8 +8,7 @@ trap
     Write-Error "$($_.Exception)`n`nActual Stack Trace:`n$($_.ScriptStackTrace)`n`nError Output Stack Trace:" 
     exit 1
 }
-Get-ChildItem ..\ -recurse 
-$modulePath = Join-Path $PSScriptRoot "..\modules\Version-Control.psm1"
-Import-Module $modulePath
+$modulepath = Get-ChildItem -recurse -Include Version-Control.psm1
+Import-Module $modulePath[0]
 
 VerifyAllGitDirectories
