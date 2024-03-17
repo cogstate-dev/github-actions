@@ -8,7 +8,7 @@ trap
     Write-Error "$($_.Exception)`n`nActual Stack Trace:`n$($_.ScriptStackTrace)`n`nError Output Stack Trace:" 
     exit 1
 }
-get-childitme ..\ -recurse 
+Get-ChildItem ..\ -recurse 
 $modulePath = Join-Path $PSScriptRoot "..\modules\Version-Control.psm1"
 Import-Module $modulePath
 
