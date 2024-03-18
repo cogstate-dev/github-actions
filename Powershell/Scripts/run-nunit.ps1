@@ -18,10 +18,7 @@ param (
     $testFileFilterPattern = "Cogstate.*.Test.dll",
     [parameter()]
     [string]
-    $testFileFolderFilter = "*bin",
-    [parameter(Mandatory=$true)]
-    [string]
-    $nugetApiKey
+    $testFileFolderFilter = "*bin"
 )
 
 #install nunit
