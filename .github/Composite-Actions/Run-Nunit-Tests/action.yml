@@ -1,0 +1,33 @@
+name: 'Run Unit Tests'
+description: 'Runs unit tests using NUnit.'
+author: 'Mike Burgess'
+inputs:
+  NUGET_SOURCE:
+    description: 'NuGet source setting.'
+    required: true
+  NUNIT_EXPRESSION:
+    description: 'nunit expression in Test Expresison Language: https://docs.nunit.org/articles/nunit/running-tests/Test-Selection-Language.html. Example: "cat == Unit||cat == Test_Unit"'
+  NUNIT_APP_CONFIG_FILE:
+    description: 'File location for the app config. Example: "Cogstate.Platform/Cogstate.Tests.WebApi/App.config"'
+    required: true
+  NUGET_CONFIG_FULL_PATH:
+    description: 'full path to the nuget.config file. Example: "$PWD\nuget.config"'
+    default: '$PWD\nuget.config'
+    required: false
+  TEST_FILE_FILTER_PATTERN:
+    description: 'test file filter with * wildcards. Example: "Cogstate.*.Test.dll"'
+    default: 'Cogstate.*.Test.dll'
+    required: false
+  TEST_FOLDER_FILTER_PATTERN:
+    description: 'test folder filter with * wildcards. Example: "*bin"'
+    default: '*bin'
+    required: false
+    
+runs:
+  using: 'composite'
+  steps:
+    - run: |
+        write-output "writing api ${{inputs.PROGET_API_KEY}}"
+        ${{ github.action_path }}/../../../Powershell/Scripts\run-nunit.ps1 -nunitExpression "${{ inputs.NUNIT_EXPRESSION }}" -nugetConfigFullPath "${{ inputs.NUGET_CONFIG_FULL_PATH }}" -nunitAppConfigFile "${{ inputs.NUNIT_APP_CONFIG_FILE }}" -testFileFilterPattern "${{ inputs.TEST_FILE_FILTER_PATTERN }}" -testFileFolderFilter "${{ inputs.TEST_FOLDER_FILTER_PATTERN }}" -nugetSource "${{ inputs.NUGET_SOURCE }}"
+      shell: |
+        pwsh -noninteractive -command "try {{ $ErrorActionPreference='Stop'; . '{0}' }} catch {{ Write-Error ""FAILED: $_""; throw; }} if ((Test-Path -LiteralPath variable:\LASTEXITCODE)) {{ exit $LASTEXITCODE }}"

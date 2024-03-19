@@ -17,11 +17,12 @@ param (
     $nugetApiKey,
     [parameter()]
     [string]
-    $nugetConfigFullPath = "$pwd\nuget.config"
+    $nugetConfigFullPath = "$env:GITHUB_WORKSPACE\nuget.config"
 )
-$ErrorActionPreference= 'Stop'
+write-output "setting error action preference to stop"
 
 # Clean out all nuget configs
+write-output "Removing"
 Get-ChildItem -Recurse -Filter "nuget.config" | ForEach-Object {
     if (Test-Path $_.FullName) {
             write-output "removing $_.fullname"
@@ -31,6 +32,7 @@ Get-ChildItem -Recurse -Filter "nuget.config" | ForEach-Object {
 
 # Create a simple nuget.config pointing to the proper proget feed
 # Creating config content block
+write-output "setting content config block"
 $configContent = 
 @"
 <?xml version="1.0" encoding="utf-8"?>
@@ -47,18 +49,22 @@ $configContent =
 </configuration>
 "@
 
+write-output "writing block to a config path"
 # Setting nuget config with content block
 $configContent | Set-Content -Path $nugetConfigFullPath
 
 # Update NuGet sources
+write-output "nuget source update proget"
 nuget.exe source update -ConfigFile "$nugetConfigFullPath" -Name proget -Username api -Password $nugetApiKey  
-nuget.exe  source update -ConfigFile "$nugetConfigFullPath" -Name proget-lib -Username api -Password $nugetApiKey  
+write-output "nuget source update proget-lib"
+nuget.exe  source update -ConfigFile "$nugetConfigFullPath" -Name proget-lib -Username api -Password $nugetApiKey
+write-output "nuget source update proget-deployable"
 nuget.exe  source update -ConfigFile "$nugetConfigFullPath" -Name proget-deployable -Username api -Password $nugetApiKey  
 
+write-output "display nuget sources detailed verbosity"
 # Display NuGet sources with detailed verbosity
 nuget.exe  source -Verbosity detailed
 
-
+write-output "nuget restore"
 # Nuget Restore
-nuget.exe restore Cogstate.Platform\Cogstate.Platform.sln -force -recursive -ConfigFile .\nuget.config -Verbosity detailed
-
+nuget.exe restore Cogstate.Platform\Cogstate.Platform.sln -force -recursive -ConfigFile $nugetConfigFullPath -Verbosity detailed

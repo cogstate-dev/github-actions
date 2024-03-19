@@ -1,0 +1,15 @@
+name: 'Verify Commits'
+description: 'Checks out and verifies the commits'
+author: 'Mike Burgess'
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout files on agent
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: test then run set-nugetfeeds.ps1
+      run: |
+        ${{ github.action_path }}/../../../Powershell/Scripts\Confirm-PreviousCommitsMerged.ps1
+      shell: |
+        pwsh -noninteractive -command "try {{ $ErrorActionPreference='Stop'; . '{0}' }} catch {{ Write-Error ""FAILED: $_""; throw; }} if ((Test-Path -LiteralPath variable:\LASTEXITCODE)) {{ exit $LASTEXITCODE }}"
