@@ -32,9 +32,9 @@ Example use of composite actions:
          uses: actions/checkout@v2
 
        - name: Fix NuGet Feeds
-         uses: username/fix-nuget-feeds@main
+         uses: cogstate-dev/github-actions/.github/Composite-Actions/Fix-Nuget-Feeds@v1.0.0
          with:
-           NUGET_PUBLISH: 'your_publish_value'
-           NUGET_SOURCE: 'your_source_value'
-           NUGET_LIBRARY: 'your_library_value'
-           PROGET_API_KEY: ${{ secrets.PROGET_API_KEY }}
+            NUGET_PUBLISH: ${{ env.NUGET_PUBLISH }}
+            NUGET_SOURCE: ${{ env.NUGET_SOURCE }}
+            NUGET_LIBRARY: ${{ env.NUGET_LIBRARY }}
+            PROGET_API_KEY: ${{ secrets.PROGET_API_KEY }}
