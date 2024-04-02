@@ -98,14 +98,14 @@ runs:
       id: override-nuget-publish
       if: inputs.NUGET_PUBLISH_OVERRIDE && contains(inputs.BRANCH_NAME,'release')
       run: |
-       echo "NUGET_PUBLISH=${{ inputs.NUGET_PUBLISH_OVERRIDE }}" >> $GITHUB_ENV"
+       echo "NUGET_PUBLISH=${{ inputs.NUGET_PUBLISH_OVERRIDE }}" >> $GITHUB_ENV
       shell: bash
 
     - name: Override Nuget Dev Publish
       id: override-nuget-dev-publish
       if: inputs.NUGET_PUBLISH_DEV_OVERRIDE && contains(inputs.BRANCH_NAME,'feature')
       run: |
-       echo "NUGET_PUBLISH=${{ inputs.NUGET_PUBLISH_DEV_OVERRIDE }}" >> $GITHUB_ENV"
+       echo "NUGET_PUBLISH=${{ inputs.NUGET_PUBLISH_DEV_OVERRIDE }}" >> $GITHUB_ENV
       shell: bash
 
     #Override the Nuget Library variables if they are provided as inputs
@@ -114,14 +114,14 @@ runs:
       id: override-nuget-library
       if: inputs.NUGET_LIBRARY_OVERRIDE && contains(inputs.BRANCH_NAME,'release')
       run: |
-       echo "NUGET_PUBLISH=${{ inputs.NUGET_LIBRARY_OVERRIDE }}" >> $GITHUB_ENV"
+       echo "NUGET_LIBRARY=${{ inputs.NUGET_LIBRARY_OVERRIDE }}" >> $GITHUB_ENV
       shell: bash
 
     - name: Override Nuget Dev Library
       id: override-nuget-dev-library
       if: inputs.NUGET_LIBRARY_DEV_OVERRIDE && contains(inputs.BRANCH_NAME,'feature')
       run: |
-       echo "NUGET_PUBLISH=${{ inputs.NUGET_LIBRARY_DEV_OVERRIDE }}" >> $GITHUB_ENV"
+       echo "NUGET_LIBRARY=${{ inputs.NUGET_LIBRARY_DEV_OVERRIDE }}" >> $GITHUB_ENV
       shell: bash
 
     #Override the Nuget Source variables if they are provided as inputs
@@ -130,14 +130,14 @@ runs:
       id: override-nuget-source
       if: inputs.NUGET_SOURCE_OVERRIDE && contains(inputs.BRANCH_NAME,'release')
       run: |
-       echo "NUGET_PUBLISH=${{ inputs.NUGET_SOURCE_OVERRIDE }}" >> $GITHUB_ENV"
+       echo "NUGET_SOURCE=${{ inputs.NUGET_SOURCE_OVERRIDE }}" >> $GITHUB_ENV
       shell: bash
 
     - name: Override Nuget Dev Source
       id: override-nuget-dev-source
       if: inputs.NUGET_SOURCE_DEV_OVERRIDE && contains(inputs.BRANCH_NAME,'feature')
       run: |
-       echo "NUGET_PUBLISH=${{ inputs.NUGET_SOURCE_DEV_OVERRIDE }}" >> $GITHUB_ENV"
+       echo "NUGET_SOURCE=${{ inputs.NUGET_SOURCE_DEV_OVERRIDE }}" >> $GITHUB_ENV
       shell: bash
 
     - name: Set output variables
