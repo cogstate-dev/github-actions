@@ -70,6 +70,7 @@ nuget.exe  source -Verbosity detailed
 
 if($null -ne $solutionFile){
     write-output "SolutionFile supplied, running the nuget restore"
+    write-output "Contents of the solutionfile variable: $solutionFile"
     # Nuget Restore
     nuget.exe restore $env:GITHUB_WORKSPACE\$soultionFile -force -recursive -ConfigFile $nugetConfigFullPath -Verbosity detailed
 }
