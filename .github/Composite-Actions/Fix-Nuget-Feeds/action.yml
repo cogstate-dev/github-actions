@@ -27,14 +27,14 @@ runs:
         nuget-api-key: ${{ inputs.PROGET_API_KEY }}
 
     - name: test then run set-nugetfeeds.ps1
-      if: inputs.SOLUTION_FILE == null || inputs.SOLUTION_FILE == ''
+      if: ${{ inputs.SOLUTION_FILE == null || inputs.SOLUTION_FILE == '' }}
       run: |
         ${{ github.action_path }}/../../../Powershell/Scripts\set-nugetfeeds.ps1 -nugetPublish "${{ inputs.NUGET_PUBLISH }}" -nugetSource "${{ inputs.NUGET_SOURCE }}" -nugetLibrary "${{ inputs.NUGET_LIBRARY }}" -nugetApiKey "${{ inputs.PROGET_API_KEY }}" -nugetConfigFullPath "${{ github.workspace }}\nuget.config"
       shell: |
         pwsh -noninteractive -command "try {{ $ErrorActionPreference='Stop'; . '{0}' }} catch {{ Write-Error ""FAILED: $_""; throw; }} if ((Test-Path -LiteralPath variable:\LASTEXITCODE)) {{ exit $LASTEXITCODE }}"
 
     - name: test then run set-nugetfeeds.ps1
-      if: inputs.SOLUTION_FILE && inputs.SOLUTION_FILE != ''
+      if: ${{ inputs.SOLUTION_FILE && inputs.SOLUTION_FILE != ''}}
       run: |
         ${{ github.action_path }}/../../../Powershell/Scripts\set-nugetfeeds.ps1 -nugetPublish "${{ inputs.NUGET_PUBLISH }}" -nugetSource "${{ inputs.NUGET_SOURCE }}" -nugetLibrary "${{ inputs.NUGET_LIBRARY }}" -nugetApiKey "${{ inputs.PROGET_API_KEY }}" -nugetConfigFullPath "${{ github.workspace }}\nuget.config" -solutionFile ${{ inputs.SOLUTION_FILE }}
       shell: |
