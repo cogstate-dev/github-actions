@@ -68,7 +68,7 @@ write-output "display nuget sources detailed verbosity"
 # Display NuGet sources with detailed verbosity
 nuget.exe  source -Verbosity detailed
 
-if($null -ne $solutionFile){
+if(!([string]::IsNullOrEmpty($solutionFile))){
     write-output "SolutionFile supplied, running the nuget restore"
     write-output "Contents of the solutionfile variable: $solutionFile"
     # Nuget Restore
