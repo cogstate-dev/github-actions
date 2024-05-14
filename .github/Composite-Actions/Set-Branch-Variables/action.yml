@@ -76,6 +76,12 @@ runs:
        $GitHubRunNumber = $("${{ github.run_number }}").tolower()
        $GitHubRunAttempt= $("${{ github.run_attempt }}").tolower()
 
+       Write-Output "Branch Regex Group 1: $BranchRegexGroup1"
+       Write-Output "Build Type: $BuildType"
+       Write-Output "Branch Regex Group 2: $BranchRegexGroup2"
+       Write-Output "GitHubRunNumber: $GitHubRunNumber"
+       Write-Output "GitHubRunAttempt: $GitHubRunAttempt"
+
        Write-Output "preversion=$BranchRegexGroup1-$BuildType.$BranchRegexGroup2.$GithubRunNumber$GitHubRunAttempt" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       shell: |
        pwsh -noninteractive -command "try {{ $ErrorActionPreference='Stop'; . '{0}' }} catch {{ Write-Error ""FAILED: $_""; throw; }} if ((Test-Path -LiteralPath variable:\LASTEXITCODE)) {{ exit $LASTEXITCODE }}"
@@ -102,6 +108,11 @@ runs:
        $BuildType = $("${{ env.BUILD_TYPE }}").tolower()
        $GitHubRunNumber = $("${{ github.run_number }}").tolower()
        $GitHubRunAttempt= $("${{ github.run_attempt }}").tolower()
+
+       Write-Output "Branch Regex Group 1: $BranchRegexGroup1"
+       Write-Output "Build Type: $BuildType"
+       Write-Output "GitHubRunNumber: $GitHubRunNumber"
+       Write-Output "GitHubRunAttempt: $GitHubRunAttempt"
 
        Write-Output "preversion=$BranchRegexGroup1-$BuildType.$GitHubRunNumber$GitHubRunAttempt" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       shell: |
