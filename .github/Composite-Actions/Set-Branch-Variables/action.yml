@@ -70,11 +70,11 @@ runs:
       id: set-dev-version
       if: contains(inputs.BRANCH_NAME,'feature')
       run: |
-       $BranchRegexGroup1 = $(${{ steps.branch-regex.outputs.group1 }}).tolower()
-       $BuildType = $(${{ env.BUILD_TYPE }}).tolower()
-       $BranchRegexGroup2  = $(${{ steps.branch-regex.outputs.group2 }}).tolower()
-       $GitHubRunNumber = $(${{ github.run_number }}).tolower()
-       $GitHubRunAttempt= $(${{ github.run_attempt }}).tolower()
+       $BranchRegexGroup1 = $("${{ steps.branch-regex.outputs.group1 }}").tolower()
+       $BuildType = $("${{ env.BUILD_TYPE }}").tolower()
+       $BranchRegexGroup2  = $("${{ steps.branch-regex.outputs.group2 }}").tolower()
+       $GitHubRunNumber = $("${{ github.run_number }}").tolower()
+       $GitHubRunAttempt= $("${{ github.run_attempt }}").tolower()
 
        Write-Output "preversion=$BranchRegex-$BuildType.$BranchRegexGroup2.$GithubRunNumber$GitHubRunAttempt" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       shell: |
@@ -98,10 +98,10 @@ runs:
       id: set-rc-version
       if: contains(inputs.BRANCH_NAME,'release')
       run: |
-       $BranchRegexGroup1 = $(${{ steps.branch-regex.outputs.group1 }}).tolower()
-       $BuildType = $(${{ env.BUILD_TYPE }}).tolower()
-       $GitHubRunNumber = $(${{ github.run_number }}).tolower()
-       $GitHubRunAttempt= $(${{ github.run_attempt }}).tolower()
+       $BranchRegexGroup1 = $("${{ steps.branch-regex.outputs.group1 }}").tolower()
+       $BuildType = $("${{ env.BUILD_TYPE }}").tolower()
+       $GitHubRunNumber = $("${{ github.run_number }}").tolower()
+       $GitHubRunAttempt= $("${{ github.run_attempt }}").tolower()
 
        Write-Output "preversion=$BranchRegexGroup1-$BuildType.$GitHubRunNumber$GitHubRunAttempt" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       shell: |
