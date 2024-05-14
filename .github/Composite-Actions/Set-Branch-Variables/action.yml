@@ -58,19 +58,27 @@ runs:
       id: set-dev-variables
       if: contains(inputs.BRANCH_NAME,'feature')
       run: |
-       Write-Output $("BUILD_TYPE=dev").tolower() | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-       Write-Output $("BUILD_TYPE=Debug").tolower() | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-       Write-Output $("NUGET_PUBLISH=https://proget.cogstate.com/nuget/cogstate-releases-dev/").tolower() | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-       Write-Output $("NUGET_SOURCE=https://proget.cogstate.com/nuget/nuget-dev/").tolower() | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-       Write-Output $("NUGET_LIBRARY=https://proget.cogstate.com/nuget/cogstate-library-nuget-dev/").tolower() | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-      shell: pwsh
+       Write-Output "BUILD_TYPE=dev" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+       Write-Output "BUILD_CONFIG=Debug" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+       Write-Output "NUGET_PUBLISH=https://proget.cogstate.com/nuget/cogstate-releases-dev/" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+       Write-Output "NUGET_SOURCE=https://proget.cogstate.com/nuget/nuget-dev/" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+       Write-Output "NUGET_LIBRARY=https://proget.cogstate.com/nuget/cogstate-library-nuget-dev/" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      shell: |
+       pwsh -noninteractive -command "try {{ $ErrorActionPreference='Stop'; . '{0}' }} catch {{ Write-Error ""FAILED: $_""; throw; }} if ((Test-Path -LiteralPath variable:\LASTEXITCODE)) {{ exit $LASTEXITCODE }}"
 
     - name: Set dev version
       id: set-dev-version
       if: contains(inputs.BRANCH_NAME,'feature')
       run: |
-       Write-Output $("preversion=${{ steps.branch-regex.outputs.group1 }}-${{ env.BUILD_TYPE }}.${{ steps.branch-regex.outputs.group2 }}.${{ github.run_number }}${{ github.run_attempt }}").tolower() | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-      shell: pwsh
+       $BranchRegexGroup1 = $(${{ steps.branch-regex.outputs.group1 }}).tolower()
+       $BuildType = $(${{ env.BUILD_TYPE }}).tolower()
+       $BranchRegexGroup2  = $(${{ steps.branch-regex.outputs.group2 }}).tolower()
+       $GitHubRunNumber = $(${{ github.run_number }}).tolower()
+       $GitHubRunAttempt= $(${{ github.run_attempt }}).tolower()
+
+       Write-Output "preversion=$BranchRegex-$BuildType.$BranchRegexGroup2.$GithubRunNumber$GitHubRunAttempt" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      shell: |
+       pwsh -noninteractive -command "try {{ $ErrorActionPreference='Stop'; . '{0}' }} catch {{ Write-Error ""FAILED: $_""; throw; }} if ((Test-Path -LiteralPath variable:\LASTEXITCODE)) {{ exit $LASTEXITCODE }}"
 
     #Set the RC Variables if the branch contains release
 
@@ -78,19 +86,26 @@ runs:
       id: set-rc-variables
       if: contains(inputs.BRANCH_NAME,'release')
       run: |
-       Write-Output $("BUILD_TYPE=rc").tolower() | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append   
-       Write-Output $("BUILD_CONFIG=Release").tolower() | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-       Write-Output $("NUGET_PUBLISH=https://proget.cogstate.com/nuget/cogstate-releases-candidate/").tolower() | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-       Write-Output $("NUGET_SOURCE=https://proget.cogstate.com/nuget/nuget-dev/").tolower() | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-       Write-Output $("NUGET_LIBRARY=https://proget.cogstate.com/nuget/cogstate-library-nuget/").tolower() | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-      shell: pwsh
+       Write-Output "BUILD_TYPE=rc" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append   
+       Write-Output "BUILD_CONFIG=Release" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+       Write-Output "NUGET_PUBLISH=https://proget.cogstate.com/nuget/cogstate-releases-candidate/" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+       Write-Output "NUGET_SOURCE=https://proget.cogstate.com/nuget/nuget-dev/" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+       Write-Output "NUGET_LIBRARY=https://proget.cogstate.com/nuget/cogstate-library-nuget/" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      shell: |
+       pwsh -noninteractive -command "try {{ $ErrorActionPreference='Stop'; . '{0}' }} catch {{ Write-Error ""FAILED: $_""; throw; }} if ((Test-Path -LiteralPath variable:\LASTEXITCODE)) {{ exit $LASTEXITCODE }}"
 
     - name: Set rc version
       id: set-rc-version
       if: contains(inputs.BRANCH_NAME,'release')
       run: |
-       Write-Output $("preversion=${{ steps.branch-regex.outputs.group1 }}-${{ env.BUILD_TYPE }}.${{ github.run_number }}${{ github.run_attempt }}").tolower() | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-      shell: pwsh
+       $BranchRegexGroup1 = $(${{ steps.branch-regex.outputs.group1 }}).tolower()
+       $BuildType = $(${{ env.BUILD_TYPE }}).tolower()
+       $GitHubRunNumber = $(${{ github.run_number }}).tolower()
+       $GitHubRunAttempt= $(${{ github.run_attempt }}).tolower()
+
+       Write-Output "preversion=$BranchRegexGroup1-$BuildType.$GitHubRunNumber$GitHubRunAttempt" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      shell: |
+       pwsh -noninteractive -command "try {{ $ErrorActionPreference='Stop'; . '{0}' }} catch {{ Write-Error ""FAILED: $_""; throw; }} if ((Test-Path -LiteralPath variable:\LASTEXITCODE)) {{ exit $LASTEXITCODE }}"
 
     #Override the publish variables if they are provided as inputs
 
@@ -98,15 +113,17 @@ runs:
       id: override-nuget-publish
       if: inputs.NUGET_PUBLISH_OVERRIDE && contains(inputs.BRANCH_NAME,'release')
       run: |
-       Write-Output $("NUGET_PUBLISH=${{ inputs.NUGET_PUBLISH_OVERRIDE }}").tolower() | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-      shell: pwsh
+       Write-Output "NUGET_PUBLISH=${{ inputs.NUGET_PUBLISH_OVERRIDE }}" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      shell: |
+       pwsh -noninteractive -command "try {{ $ErrorActionPreference='Stop'; . '{0}' }} catch {{ Write-Error ""FAILED: $_""; throw; }} if ((Test-Path -LiteralPath variable:\LASTEXITCODE)) {{ exit $LASTEXITCODE }}"
 
     - name: Override Nuget Dev Publish
       id: override-nuget-dev-publish
       if: inputs.NUGET_PUBLISH_DEV_OVERRIDE && contains(inputs.BRANCH_NAME,'feature')
       run: |
-       Write-Output $("NUGET_PUBLISH=${{ inputs.NUGET_PUBLISH_DEV_OVERRIDE }}").tolower() | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-      shell: pwsh
+       Write-Output "NUGET_PUBLISH=${{ inputs.NUGET_PUBLISH_DEV_OVERRIDE }}" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      shell: |
+       pwsh -noninteractive -command "try {{ $ErrorActionPreference='Stop'; . '{0}' }} catch {{ Write-Error ""FAILED: $_""; throw; }} if ((Test-Path -LiteralPath variable:\LASTEXITCODE)) {{ exit $LASTEXITCODE }}"
 
     #Override the Nuget Library variables if they are provided as inputs
 
@@ -114,15 +131,17 @@ runs:
       id: override-nuget-library
       if: inputs.NUGET_LIBRARY_OVERRIDE && contains(inputs.BRANCH_NAME,'release')
       run: |
-       Write-Output $("NUGET_LIBRARY=${{ inputs.NUGET_LIBRARY_OVERRIDE }}").tolower() | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-      shell: pwsh
+       Write-Output "NUGET_LIBRARY=${{ inputs.NUGET_LIBRARY_OVERRIDE }}" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      shell: |
+       pwsh -noninteractive -command "try {{ $ErrorActionPreference='Stop'; . '{0}' }} catch {{ Write-Error ""FAILED: $_""; throw; }} if ((Test-Path -LiteralPath variable:\LASTEXITCODE)) {{ exit $LASTEXITCODE }}"
 
     - name: Override Nuget Dev Library
       id: override-nuget-dev-library
       if: inputs.NUGET_LIBRARY_DEV_OVERRIDE && contains(inputs.BRANCH_NAME,'feature')
       run: |
-       Write-Output $("NUGET_LIBRARY=${{ inputs.NUGET_LIBRARY_DEV_OVERRIDE }}").tolower() | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-      shell: pwsh
+       Write-Output "NUGET_LIBRARY=${{ inputs.NUGET_LIBRARY_DEV_OVERRIDE }}" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      shell: |
+       pwsh -noninteractive -command "try {{ $ErrorActionPreference='Stop'; . '{0}' }} catch {{ Write-Error ""FAILED: $_""; throw; }} if ((Test-Path -LiteralPath variable:\LASTEXITCODE)) {{ exit $LASTEXITCODE }}"
 
     #Override the Nuget Source variables if they are provided as inputs
 
@@ -130,23 +149,26 @@ runs:
       id: override-nuget-source
       if: inputs.NUGET_SOURCE_OVERRIDE && contains(inputs.BRANCH_NAME,'release')
       run: |
-       Write-Output $("NUGET_SOURCE=${{ inputs.NUGET_SOURCE_OVERRIDE }}").tolower() | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-      shell: pwsh
+       Write-Output "NUGET_SOURCE=${{ inputs.NUGET_SOURCE_OVERRIDE }}" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      shell: |
+       pwsh -noninteractive -command "try {{ $ErrorActionPreference='Stop'; . '{0}' }} catch {{ Write-Error ""FAILED: $_""; throw; }} if ((Test-Path -LiteralPath variable:\LASTEXITCODE)) {{ exit $LASTEXITCODE }}"
 
     - name: Override Nuget Dev Source
       id: override-nuget-dev-source
       if: inputs.NUGET_SOURCE_DEV_OVERRIDE && contains(inputs.BRANCH_NAME,'feature')
       run: |
-       Write-Output $("NUGET_SOURCE=${{ inputs.NUGET_SOURCE_DEV_OVERRIDE }}").tolower() | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-      shell: pwsh
+       Write-Output "NUGET_SOURCE=${{ inputs.NUGET_SOURCE_DEV_OVERRIDE }}" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      shell: |
+       pwsh -noninteractive -command "try {{ $ErrorActionPreference='Stop'; . '{0}' }} catch {{ Write-Error ""FAILED: $_""; throw; }} if ((Test-Path -LiteralPath variable:\LASTEXITCODE)) {{ exit $LASTEXITCODE }}"
 
     - name: Set output variables
       id: set-vars
       run: |
-       Write-Output $("version=${{ env.preversion }}").tolower() | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
-       Write-Output $("build-config=${{ env.BUILD_CONFIG }}").tolower() | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
-       Write-Output $("build-type=${{ env.BUILD_TYPE }}").tolower() | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
-       Write-Output $("nuget-publish=${{ env.NUGET_PUBLISH }}").tolower() | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
-       Write-Output $("nuget-source=${{ env.NUGET_SOURCE }}".tolower() | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
-       Write-Output $("nuget-library=${{ env.NUGET_LIBRARY }}".tolower() | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
-      shell: pwsh
+       Write-Output "version=${{ env.preversion }}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+       Write-Output "build-config=${{ env.BUILD_CONFIG }}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+       Write-Output "build-type=${{ env.BUILD_TYPE }}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+       Write-Output "nuget-publish=${{ env.NUGET_PUBLISH }}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+       Write-Output "nuget-source=${{ env.NUGET_SOURCE }}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+       Write-Output "nuget-library=${{ env.NUGET_LIBRARY }}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+      shell: |
+       pwsh -noninteractive -command "try {{ $ErrorActionPreference='Stop'; . '{0}' }} catch {{ Write-Error ""FAILED: $_""; throw; }} if ((Test-Path -LiteralPath variable:\LASTEXITCODE)) {{ exit $LASTEXITCODE }}"
