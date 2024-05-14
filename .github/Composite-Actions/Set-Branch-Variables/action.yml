@@ -58,19 +58,19 @@ runs:
       id: set-dev-variables
       if: contains(inputs.BRANCH_NAME,'feature')
       run: |
-       echo "BUILD_TYPE=dev" >> $GITHUB_ENV   
-       echo "BUILD_CONFIG=Debug" >> $GITHUB_ENV
-       echo "NUGET_PUBLISH=https://proget.cogstate.com/nuget/cogstate-releases-dev/" >> $GITHUB_ENV
-       echo "NUGET_SOURCE=https://proget.cogstate.com/nuget/nuget-dev/" >> $GITHUB_ENV
-       echo "NUGET_LIBRARY=https://proget.cogstate.com/nuget/cogstate-library-nuget-dev/" >> $GITHUB_ENV
-      shell: bash
+       Write-Output $("BUILD_TYPE=dev").tolower() | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+       Write-Output $("BUILD_TYPE=Debug").tolower() | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+       Write-Output $("NUGET_PUBLISH=https://proget.cogstate.com/nuget/cogstate-releases-dev/").tolower() | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+       Write-Output $("NUGET_SOURCE=https://proget.cogstate.com/nuget/nuget-dev/").tolower() | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+       Write-Output $("NUGET_LIBRARY=https://proget.cogstate.com/nuget/cogstate-library-nuget-dev/").tolower() | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      shell: pwsh
 
     - name: Set dev version
       id: set-dev-version
       if: contains(inputs.BRANCH_NAME,'feature')
       run: |
-       echo "preversion=${{ steps.branch-regex.outputs.group1 }}-${{ env.BUILD_TYPE }}.${{ steps.branch-regex.outputs.group2 }}.${{ github.run_number }}${{ github.run_attempt }}" >> $GITHUB_ENV
-      shell: bash
+       Write-Output $("preversion=${{ steps.branch-regex.outputs.group1 }}-${{ env.BUILD_TYPE }}.${{ steps.branch-regex.outputs.group2 }}.${{ github.run_number }}${{ github.run_attempt }}").tolower() | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      shell: pwsh
 
     #Set the RC Variables if the branch contains release
 
@@ -78,19 +78,19 @@ runs:
       id: set-rc-variables
       if: contains(inputs.BRANCH_NAME,'release')
       run: |
-       echo "BUILD_TYPE=rc" >> $GITHUB_ENV   
-       echo "BUILD_CONFIG=Release" >> $GITHUB_ENV
-       echo "NUGET_PUBLISH=https://proget.cogstate.com/nuget/cogstate-releases-candidate/" >> $GITHUB_ENV
-       echo "NUGET_SOURCE=https://proget.cogstate.com/nuget/nuget-dev/" >> $GITHUB_ENV
-       echo "NUGET_LIBRARY=https://proget.cogstate.com/nuget/cogstate-library-nuget/" >> $GITHUB_ENV
-      shell: bash
+       Write-Output $("BUILD_TYPE=rc").tolower() | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append   
+       Write-Output $("BUILD_CONFIG=Release").tolower() | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+       Write-Output $("NUGET_PUBLISH=https://proget.cogstate.com/nuget/cogstate-releases-candidate/").tolower() | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+       Write-Output $("NUGET_SOURCE=https://proget.cogstate.com/nuget/nuget-dev/").tolower() | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+       Write-Output $("NUGET_LIBRARY=https://proget.cogstate.com/nuget/cogstate-library-nuget/").tolower() | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      shell: pwsh
 
     - name: Set rc version
       id: set-rc-version
       if: contains(inputs.BRANCH_NAME,'release')
       run: |
-       echo "preversion=${{ steps.branch-regex.outputs.group1 }}-${{ env.BUILD_TYPE }}.${{ github.run_number }}${{ github.run_attempt }}" >> $GITHUB_ENV
-      shell: bash
+       Write-Output $("preversion=${{ steps.branch-regex.outputs.group1 }}-${{ env.BUILD_TYPE }}.${{ github.run_number }}${{ github.run_attempt }}").tolower() | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      shell: pwsh
 
     #Override the publish variables if they are provided as inputs
 
@@ -98,15 +98,15 @@ runs:
       id: override-nuget-publish
       if: inputs.NUGET_PUBLISH_OVERRIDE && contains(inputs.BRANCH_NAME,'release')
       run: |
-       echo "NUGET_PUBLISH=${{ inputs.NUGET_PUBLISH_OVERRIDE }}" >> $GITHUB_ENV
-      shell: bash
+       Write-Output $("NUGET_PUBLISH=${{ inputs.NUGET_PUBLISH_OVERRIDE }}").tolower() | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      shell: pwsh
 
     - name: Override Nuget Dev Publish
       id: override-nuget-dev-publish
       if: inputs.NUGET_PUBLISH_DEV_OVERRIDE && contains(inputs.BRANCH_NAME,'feature')
       run: |
-       echo "NUGET_PUBLISH=${{ inputs.NUGET_PUBLISH_DEV_OVERRIDE }}" >> $GITHUB_ENV
-      shell: bash
+       Write-Output $("NUGET_PUBLISH=${{ inputs.NUGET_PUBLISH_DEV_OVERRIDE }}").tolower() | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      shell: pwsh
 
     #Override the Nuget Library variables if they are provided as inputs
 
@@ -114,15 +114,15 @@ runs:
       id: override-nuget-library
       if: inputs.NUGET_LIBRARY_OVERRIDE && contains(inputs.BRANCH_NAME,'release')
       run: |
-       echo "NUGET_LIBRARY=${{ inputs.NUGET_LIBRARY_OVERRIDE }}" >> $GITHUB_ENV
-      shell: bash
+       Write-Output $("NUGET_LIBRARY=${{ inputs.NUGET_LIBRARY_OVERRIDE }}").tolower() | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      shell: pwsh
 
     - name: Override Nuget Dev Library
       id: override-nuget-dev-library
       if: inputs.NUGET_LIBRARY_DEV_OVERRIDE && contains(inputs.BRANCH_NAME,'feature')
       run: |
-       echo "NUGET_LIBRARY=${{ inputs.NUGET_LIBRARY_DEV_OVERRIDE }}" >> $GITHUB_ENV
-      shell: bash
+       Write-Output $("NUGET_LIBRARY=${{ inputs.NUGET_LIBRARY_DEV_OVERRIDE }}").tolower() | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      shell: pwsh
 
     #Override the Nuget Source variables if they are provided as inputs
 
@@ -130,23 +130,23 @@ runs:
       id: override-nuget-source
       if: inputs.NUGET_SOURCE_OVERRIDE && contains(inputs.BRANCH_NAME,'release')
       run: |
-       echo "NUGET_SOURCE=${{ inputs.NUGET_SOURCE_OVERRIDE }}" >> $GITHUB_ENV
-      shell: bash
+       Write-Output $("NUGET_SOURCE=${{ inputs.NUGET_SOURCE_OVERRIDE }}").tolower() | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      shell: pwsh
 
     - name: Override Nuget Dev Source
       id: override-nuget-dev-source
       if: inputs.NUGET_SOURCE_DEV_OVERRIDE && contains(inputs.BRANCH_NAME,'feature')
       run: |
-       echo "NUGET_SOURCE=${{ inputs.NUGET_SOURCE_DEV_OVERRIDE }}" >> $GITHUB_ENV
-      shell: bash
+       Write-Output $("NUGET_SOURCE=${{ inputs.NUGET_SOURCE_DEV_OVERRIDE }}").tolower() | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      shell: pwsh
 
     - name: Set output variables
       id: set-vars
       run: |
-       echo "version=${{ env.preversion }}" >> $GITHUB_OUTPUT  
-       echo "build-config=${{ env.BUILD_CONFIG }}" >> $GITHUB_OUTPUT  
-       echo "build-type=${{ env.BUILD_TYPE }}" >> $GITHUB_OUTPUT
-       echo "nuget-publish=${{ env.NUGET_PUBLISH }}" >> $GITHUB_OUTPUT
-       echo "nuget-source=${{ env.NUGET_SOURCE }}" >> $GITHUB_OUTPUT
-       echo "nuget-library=${{ env.NUGET_LIBRARY }}" >> $GITHUB_OUTPUT
-      shell: bash
+       Write-Output $("version=${{ env.preversion }}").tolower() | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+       Write-Output $("build-config=${{ env.BUILD_CONFIG }}").tolower() | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+       Write-Output $("build-type=${{ env.BUILD_TYPE }}").tolower() | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+       Write-Output $("nuget-publish=${{ env.NUGET_PUBLISH }}").tolower() | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+       Write-Output $("nuget-source=${{ env.NUGET_SOURCE }}".tolower() | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+       Write-Output $("nuget-library=${{ env.NUGET_LIBRARY }}".tolower() | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+      shell: pwsh
