@@ -454,6 +454,3 @@ function New-VersionsJson {
 
     Write-Output "JSON content saved to $outputFile"
 }
-
-
-
