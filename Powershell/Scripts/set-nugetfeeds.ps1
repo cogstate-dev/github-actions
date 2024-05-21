@@ -58,19 +58,19 @@ $configContent | Set-Content -Path $nugetConfigFullPath
 
 # Update NuGet sources
 write-output "nuget source update proget"
-nuget.exe source update -ConfigFile "$nugetConfigFullPath" -Name proget -Username api -Password $nugetApiKey  
+mono /usr/local/bin/nuget.exe source update -ConfigFile "$nugetConfigFullPath" -Name proget -Username api -Password $nugetApiKey  
 write-output "nuget source update proget-lib"
-nuget.exe  source update -ConfigFile "$nugetConfigFullPath" -Name proget-lib -Username api -Password $nugetApiKey
+mono /usr/local/bin/nuget.exe  source update -ConfigFile "$nugetConfigFullPath" -Name proget-lib -Username api -Password $nugetApiKey
 write-output "nuget source update proget-deployable"
-nuget.exe  source update -ConfigFile "$nugetConfigFullPath" -Name proget-deployable -Username api -Password $nugetApiKey  
+mono /usr/local/bin/nuget.exe  source update -ConfigFile "$nugetConfigFullPath" -Name proget-deployable -Username api -Password $nugetApiKey  
 
 write-output "display nuget sources detailed verbosity"
 # Display NuGet sources with detailed verbosity
-nuget.exe  source -Verbosity detailed
+mono /usr/local/bin/nuget.exe  source -Verbosity detailed
 
 if(!([string]::IsNullOrEmpty($solutionFile))){
     write-output "SolutionFile supplied, running the nuget restore"
     write-output "Contents of the solutionfile variable: $solutionFile"
     # Nuget Restore
-    nuget.exe restore $env:GITHUB_WORKSPACE\$soultionFile -force -recursive -ConfigFile $nugetConfigFullPath -Verbosity detailed
+    mono /usr/local/bin/nuget.exe restore $env:GITHUB_WORKSPACE\$soultionFile -force -recursive -ConfigFile $nugetConfigFullPath -Verbosity detailed
 }

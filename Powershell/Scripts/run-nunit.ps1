@@ -23,7 +23,7 @@ param (
 
 #install nunit
 Write-Output "installing nunit"
-nuget.exe install NUnit -Version 4.0.1 -Source $nugetSource -OutputDirectory $PWD
+mono /usr/local/bin/nuget.exe install NUnit -Version 4.0.1 -Source $nugetSource -OutputDirectory $PWD
 Write-Output "nunit installed complete"
 
 
