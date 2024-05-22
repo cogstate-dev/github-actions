@@ -15,6 +15,9 @@ param (
     [parameter(Mandatory=$true)]
     [string]
     $nugetApiKey,
+    [parameter(Mandatory=$false)]
+    [string]
+    $solutionFile,
     [parameter()]
     [string]
     $nugetConfigFullPath = "$env:GITHUB_WORKSPACE\nuget.config"
@@ -65,6 +68,9 @@ write-output "display nuget sources detailed verbosity"
 # Display NuGet sources with detailed verbosity
 nuget.exe  source -Verbosity detailed
 
-write-output "nuget restore"
-# Nuget Restore
-nuget.exe restore Cogstate.Platform\Cogstate.Platform.sln -force -recursive -ConfigFile $nugetConfigFullPath -Verbosity detailed
+if(!([string]::IsNullOrEmpty($solutionFile))){
+    write-output "SolutionFile supplied, running the nuget restore"
+    write-output "Contents of the solutionfile variable: $solutionFile"
+    # Nuget Restore
+    nuget.exe restore $env:GITHUB_WORKSPACE\$soultionFile -force -recursive -ConfigFile $nugetConfigFullPath -Verbosity detailed
+}

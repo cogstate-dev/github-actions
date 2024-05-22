@@ -401,3 +401,56 @@ function Invoke-ConfigTransformation {
         exit 1
     }
 }
+
+function New-VersionsJson {
+    param (
+        [string]$version
+    )
+
+    
+    # Example of calling the function
+    # $versionString = "6.0.0-rc.cgm-381.7711"
+    # New-VersionJson -version $versionString
+
+    # Extract major, minor, and patch parts
+    $major, $minor, $patchSection = $version -split '\.', 3
+    
+    # Initialize default values
+    $patch = "0"
+    $revision = "0"
+    $semanticPart = ""
+
+    # Extract semantic part and the patch and revision numbers
+    if ($patchSection -match '^(.*?)-(\d+)\.(\d+)$') {
+        $semanticPart = $matches[1]
+        $revision = $matches[2]
+        $patch = $matches[3]
+    } elseif ($patchSection -match '^(.*?)-(\d+)\.(\d+)$') {
+        $semanticPart = $matches[1]
+        $revision = $matches[2]
+        $patch = $matches[3]
+    } else {
+        $patch = $patchSection
+        $revision = "0"
+    }
+
+    # Construct the JSON object with ordered properties
+    $jsonObject = [PSCustomObject]@{
+        "cogstate.version.major" = $major
+        "cogstate.version.minor" = $minor
+        "cogstate.version.patch" = $patch
+        "cogstate.version.revision" = "0"
+        "cogstate.version.semantic2" = $version
+        "cogstate.version.semantic2.normalized" = "$major.$minor.0-$semanticPart.-$revision.$patch"
+        "cogstate.version.simple" = "$major.$minor.0.$patch"
+    }
+
+    # Convert to JSON
+    $jsonString = $jsonObject | ConvertTo-Json -Depth 3
+
+    # Save to a file
+    $outputFile = "versions.json"
+    $jsonString | Out-File -FilePath $outputFile
+
+    Write-Output "JSON content saved to $outputFile"
+}
