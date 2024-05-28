@@ -66,11 +66,11 @@ $configContent | Set-Content -Path $nugetConfigFullPath
 
 # Update NuGet sources
 write-output "nuget source update proget"
-Invoke-Expression "$nugetExe source update -ConfigFile $nugetConfigFullPath -Name proget -Username api -Password $nugetApiKey"
+Invoke-Expression "$nugetExe source update -ConfigFile $nugetConfigFullPath -Name proget -Username api -Password $nugetApiKey --store-password-in-clear-text"
 write-output "nuget source update proget-lib"
-Invoke-Expression "$nugetExe source update -ConfigFile $nugetConfigFullPath -Name proget-lib -Username api -Password $nugetApiKey"
+Invoke-Expression "$nugetExe source update -ConfigFile $nugetConfigFullPath -Name proget-lib -Username api -Password $nugetApiKey --store-password-in-clear-text"
 write-output "nuget source update proget-deployable"
-Invoke-Expression "$nugetExe source update -ConfigFile $nugetConfigFullPath -Name proget-deployable -Username api -Password $nugetApiKey"
+Invoke-Expression "$nugetExe source update -ConfigFile $nugetConfigFullPath -Name proget-deployable -Username api -Password $nugetApiKey --store-password-in-clear-text"
 
 write-output "display nuget sources detailed verbosity"
 # Display NuGet sources with detailed verbosity
