@@ -30,6 +30,38 @@ runs:
         # nuget-version: '4.6.2'
         nuget-api-key: ${{ inputs.PROGET_API_KEY }}
 
+    - name: Check if .NET is installed on Linux or macOS
+      if: runner.os != 'Windows'
+      run: |
+        if ! command -v dotnet &> /dev/null
+        then
+          echo ".NET is not installed. Installing .NET..."
+          echo "DOTNET_INSTALLED=false" >> $GITHUB_ENV
+        else
+          echo ".NET is already installed."
+          echo "DOTNET_INSTALLED=true" >> $GITHUB_ENV
+        fi
+      shell: bash
+
+    - name: Check if .NET is installed on Windows
+      if: runner.os == 'Windows'
+      run: |
+        if (-not (Get-Command dotnet -ErrorAction SilentlyContinue)) {
+          Write-Output ".NET is not installed. Installing .NET..."
+          echo "DOTNET_INSTALLED=false" >> $env:GITHUB_ENV
+        } else {
+          Write-Output ".NET is already installed."
+          echo "DOTNET_INSTALLED=true" >> $env:GITHUB_ENV
+        }
+      shell: pwsh
+
+    - name: Install .NET if not installed
+      if: env.DOTNET_INSTALLED == 'false'
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '6.0.x'
+
+
     - name: test then run set-nugetfeeds.ps1
       if: ${{ inputs.SOLUTION_FILE == null || inputs.SOLUTION_FILE == '' }}
       run: |
