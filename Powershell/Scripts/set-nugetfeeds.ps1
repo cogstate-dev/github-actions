@@ -22,6 +22,14 @@ param (
     [string]
     $nugetConfigFullPath = "$env:GITHUB_WORKSPACE\nuget.config"
 )
+
+# Determine OS and set the path to nuget.exe accordingly
+if ($IsWindows) {
+    $nugetExe = "nuget.exe"
+} else {
+    $nugetExe = "mono /usr/local/bin/nuget.exe"
+}
+
 write-output "setting error action preference to stop"
 
 # Clean out all nuget configs
@@ -58,19 +66,19 @@ $configContent | Set-Content -Path $nugetConfigFullPath
 
 # Update NuGet sources
 write-output "nuget source update proget"
-nuget.exe source update -ConfigFile "$nugetConfigFullPath" -Name proget -Username api -Password $nugetApiKey  
+Invoke-Expression "$nugetExe source update -ConfigFile $nugetConfigFullPath -Name proget -Username api -Password $nugetApiKey"
 write-output "nuget source update proget-lib"
-nuget.exe  source update -ConfigFile "$nugetConfigFullPath" -Name proget-lib -Username api -Password $nugetApiKey
+Invoke-Expression "$nugetExe source update -ConfigFile $nugetConfigFullPath -Name proget-lib -Username api -Password $nugetApiKey"
 write-output "nuget source update proget-deployable"
-nuget.exe  source update -ConfigFile "$nugetConfigFullPath" -Name proget-deployable -Username api -Password $nugetApiKey  
+Invoke-Expression "$nugetExe source update -ConfigFile $nugetConfigFullPath -Name proget-deployable -Username api -Password $nugetApiKey"
 
 write-output "display nuget sources detailed verbosity"
 # Display NuGet sources with detailed verbosity
-nuget.exe  source -Verbosity detailed
+Invoke-Expression "$nugetExe source -Verbosity detailed"
 
-if(!([string]::IsNullOrEmpty($solutionFile))){
+if (!([string]::IsNullOrEmpty($solutionFile))) {
     write-output "SolutionFile supplied, running the nuget restore"
     write-output "Contents of the solutionfile variable: $solutionFile"
     # Nuget Restore
-    nuget.exe restore $env:GITHUB_WORKSPACE\$soultionFile -force -recursive -ConfigFile $nugetConfigFullPath -Verbosity detailed
+    Invoke-Expression "$nugetExe restore $env:GITHUB_WORKSPACE\$solutionFile -force -recursive -ConfigFile $nugetConfigFullPath -Verbosity detailed"
 }
