@@ -33,7 +33,7 @@ if ($IsWindows) {
 write-output "setting error action preference to stop"
 
 # Clean out all nuget configs
-write-output "Removing"
+write-output "Removing all nuget config files"
 Get-ChildItem -Recurse -Filter "nuget.config" | ForEach-Object {
     if (Test-Path $_.FullName) {
             write-output "removing $_.fullname"
