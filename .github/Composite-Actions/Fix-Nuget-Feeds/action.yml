@@ -57,7 +57,7 @@ runs:
 
     - name: Install .NET if not installed
       if: env.DOTNET_INSTALLED == 'false'
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v2
       with:
         dotnet-version: '6.0.x'
 
