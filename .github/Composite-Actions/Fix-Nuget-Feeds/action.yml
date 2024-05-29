@@ -14,6 +14,10 @@ inputs:
   PROGET_API_KEY:
     description: 'API key for NuGet.'
     required: true
+  NUGET_CONFIG_PATH:
+    description: 'optional path for the nuget.config file in the directory structure'
+    default:  "${{ github.workspace }}\nuget.config" 
+    required: false
   SOLUTION_FILE:
     description: 'Optional Solution File if you want to run a restore'
     required: false
@@ -26,16 +30,48 @@ runs:
         # nuget-version: '4.6.2'
         nuget-api-key: ${{ inputs.PROGET_API_KEY }}
 
+    - name: Check if .NET is installed on Linux or macOS
+      if: runner.os != 'Windows'
+      run: |
+        if ! command -v dotnet &> /dev/null
+        then
+          echo ".NET is not installed. Installing .NET..."
+          echo "DOTNET_INSTALLED=false" >> $GITHUB_ENV
+        else
+          echo ".NET is already installed."
+          echo "DOTNET_INSTALLED=true" >> $GITHUB_ENV
+        fi
+      shell: bash
+
+    - name: Check if .NET is installed on Windows
+      if: runner.os == 'Windows'
+      run: |
+        if (-not (Get-Command dotnet -ErrorAction SilentlyContinue)) {
+          Write-Output ".NET is not installed. Installing .NET..."
+          echo "DOTNET_INSTALLED=false" >> $env:GITHUB_ENV
+        } else {
+          Write-Output ".NET is already installed."
+          echo "DOTNET_INSTALLED=true" >> $env:GITHUB_ENV
+        }
+      shell: pwsh
+
+    - name: Install .NET if not installed
+      if: env.DOTNET_INSTALLED == 'false'
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: '6.0.x'
+
+
     - name: test then run set-nugetfeeds.ps1
       if: ${{ inputs.SOLUTION_FILE == null || inputs.SOLUTION_FILE == '' }}
       run: |
-        ${{ github.action_path }}/../../../Powershell/Scripts\set-nugetfeeds.ps1 -nugetPublish "${{ inputs.NUGET_PUBLISH }}" -nugetSource "${{ inputs.NUGET_SOURCE }}" -nugetLibrary "${{ inputs.NUGET_LIBRARY }}" -nugetApiKey "${{ inputs.PROGET_API_KEY }}" -nugetConfigFullPath "${{ github.workspace }}\nuget.config"
+        ${{ github.action_path }}/../../../Powershell/Scripts\set-nugetfeeds.ps1 -nugetPublish "${{ inputs.NUGET_PUBLISH }}" -nugetSource "${{ inputs.NUGET_SOURCE }}" -nugetLibrary "${{ inputs.NUGET_LIBRARY }}" -nugetApiKey "${{ inputs.PROGET_API_KEY }}" -nugetConfigFullPath "${{ inputs.NUGET_CONFIG_PATH }}"
       shell: |
         pwsh -noninteractive -command "try {{ $ErrorActionPreference='Stop'; . '{0}' }} catch {{ Write-Error ""FAILED: $_""; throw; }} if ((Test-Path -LiteralPath variable:\LASTEXITCODE)) {{ exit $LASTEXITCODE }}"
 
     - name: test then run set-nugetfeeds.ps1
       if: ${{ inputs.SOLUTION_FILE && inputs.SOLUTION_FILE != ''}}
       run: |
-        ${{ github.action_path }}/../../../Powershell/Scripts\set-nugetfeeds.ps1 -nugetPublish "${{ inputs.NUGET_PUBLISH }}" -nugetSource "${{ inputs.NUGET_SOURCE }}" -nugetLibrary "${{ inputs.NUGET_LIBRARY }}" -nugetApiKey "${{ inputs.PROGET_API_KEY }}" -nugetConfigFullPath "${{ github.workspace }}\nuget.config" -solutionFile ${{ inputs.SOLUTION_FILE }}
+        ${{ github.action_path }}/../../../Powershell/Scripts\set-nugetfeeds.ps1 -nugetPublish "${{ inputs.NUGET_PUBLISH }}" -nugetSource "${{ inputs.NUGET_SOURCE }}" -nugetLibrary "${{ inputs.NUGET_LIBRARY }}" -nugetApiKey "${{ inputs.PROGET_API_KEY }}" -nugetConfigFullPath "${{ inputs.NUGET_CONFIG_PATH }}" -solutionFile ${{ inputs.SOLUTION_FILE }}
       shell: |
         pwsh -noninteractive -command "try {{ $ErrorActionPreference='Stop'; . '{0}' }} catch {{ Write-Error ""FAILED: $_""; throw; }} if ((Test-Path -LiteralPath variable:\LASTEXITCODE)) {{ exit $LASTEXITCODE }}"
