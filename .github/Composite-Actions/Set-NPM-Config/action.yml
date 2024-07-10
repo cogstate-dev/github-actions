@@ -1,9 +1,9 @@
-name: 'Run Unit Tests'
-description: 'Runs unit tests using NUnit.'
+name: 'Set NPM Config'
+description: 'Sets the NPMRC file to set the NPM Config files.'
 author: 'Mike Burgess'
 inputs:
-  NPM_FEED_EMAIL:
-    description: 'NPM Feed email.'
+  NUGET_SOURCE:
+    description: 'NuGet source setting.'
     required: true
   NUNIT_EXPRESSION:
     description: 'nunit expression in Test Expresison Language: https://docs.nunit.org/articles/nunit/running-tests/Test-Selection-Language.html. Example: "cat == Unit||cat == Test_Unit"'
