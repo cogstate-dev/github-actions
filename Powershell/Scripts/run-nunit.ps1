@@ -62,7 +62,7 @@ foreach($folder in $folderList){
     
     # Generate file list based on folders and patterns
     foreach($pattern in $patterns){
-        $filelist = Get-ChildItem -path $folder -Recurse -Include $pattern
+        $filelist = Get-ChildItem -path $folder -Include $pattern
         Write-Output "Filelist Post-Filter:"
         Write-Output $filelist
         # Null-check the file list from each folder
