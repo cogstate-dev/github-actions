@@ -58,22 +58,35 @@ $testFileString = ""
 
 #iterate Folder list
 foreach($folder in $folderList){
-    #generate file list based on folders
-    $filelist = $(Get-ChildItem -path $folder -recurse -file |Where-Object{$_.name -like $testFileFilterPattern}).fullname
-    #nullcheck the file list from each folder
+    $patterns = $testFileFilterPattern -split ','
+
+    # Generate file list based on folders and patterns
+    $filelist = Get-ChildItem -Path $folder -Recurse -File | Where-Object {
+        $file = $_.FullName
+        # Check if the file matches any of the patterns
+        foreach($pattern in $patterns){
+            if($file -like $pattern.Trim()){
+                return $true
+            }
+        }
+        return $false
+    }
+
+    # Null-check the file list from each folder
     if($null -ne $filelist){
-        #iterate file list for each folder
+        # Iterate file list for each folder
         foreach($file in $filelist){
-            #filter null or empties
-            if(!([string]::IsNullOrWhiteSpace($file))){
-                #add to string, space seperated, to run in invocation of nunit3-console
+            # Filter null or empty entries
+            if(!([string]::IsNullOrWhiteSpace($file.FullName))){
+                # Add to string, space separated, to run in invocation of nunit3-console
                 $testFileString += " "
-                $testFileString += $file
+                $testFileString += $file.FullName
             }
         }
         $filelist = $null
     }
 }
+
 
 Write-Output "testFileString:"
 Write-Output $testFileString
