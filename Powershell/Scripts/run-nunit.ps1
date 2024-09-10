@@ -29,16 +29,32 @@ Write-Output "nunit installed complete"
 
 try{
     [string]$nunitPath = $(Get-ChildItem -Path $PWD -Filter nunit3-console.exe -Recurse | Where-Object { $_.DirectoryName -like '*NUnit.ConsoleRunner.3.6.1*' }).fullname
+    write-output "nunitPath: $nunitPath"
 }
 catch{
     write-output "Either Nunit3-console is not there, or there are multiple instances found and it's returning an array"
+    if($nunitPath.Length -le 0){
+        Write-Output "Determination: the Nunit3-console is not there"
+    }
+    if($nunitPath.Length -gt 1){
+        Write-Output "Determination: there are multiple Nunit3-console instances"
+    }
     exit $LASTEXITCODE
 }
 #instantiate empty string for the file string
 $testFileString = ""
 
-#get all folders with bin
+#write output the current working directory
+Write-Output "The current powershell working directory is: $PWD"
+
+#get all folders with file folder filter
 $folderList = $(get-childitem -filter $testFileFolderFilter -recurse -directory).fullname
+
+#null check the folderlist
+if($null -eq $folderList){
+    Write-output "The list is empty. Check to make sure the base directory to make sure the test File Folder Filter is applicable."
+}
+
 #iterate Folder list
 foreach($folder in $folderList){
     #generate file list based on folders
