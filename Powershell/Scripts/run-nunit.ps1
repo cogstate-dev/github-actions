@@ -59,37 +59,29 @@ $testFileString = ""
 #iterate Folder list
 foreach($folder in $folderList){
     $patterns = $testFileFilterPattern -split ','
-
+    
     # Generate file list based on folders and patterns
-    $filelist = Get-ChildItem -Path $folder -Recurse -File | Where-Object {
-        $file = $_.FullName
-        # Check if the file matches any of the patterns
-        foreach($pattern in $patterns){
-            if($file -like $pattern.Trim()){
-                return $true
-            }
-        }
-        return $false
-    }
-
-    # Null-check the file list from each folder
-    if($null -ne $filelist){
-        Write-Output "Filelist:"
+    foreach($pattern in $patterns){
+        $filelist = Get-ChildItem -path $folder -Recurse -Include $pattern
+        Write-Output "Filelist Post-Filter:"
         Write-Output $filelist
-        # Iterate file list for each folder
-        foreach($file in $filelist){
-            # Filter null or empty entries
-            if(!([string]::IsNullOrWhiteSpace($file.FullName))){
-                # Add to string, space separated, to run in invocation of nunit3-console
-                Write-Output "Adding $file.Fullname"
-                $testFileString += " "
-                $testFileString += $file.FullName
+        # Null-check the file list from each folder
+        if($null -ne $filelist){
+            # Iterate file list for each folder
+            foreach($file in $filelist){
+                # Filter null or empty entries
+                if(!([string]::IsNullOrWhiteSpace($file.FullName))){
+                    # Add to string, space separated, to run in invocation of nunit3-console
+                    Write-Output "Adding $file.Fullname"
+                    $testFileString += " "
+                    $testFileString += $file.FullName
+                }
             }
+            $filelist = $null
         }
-        $filelist = $null
-    }
-    else{
-        Write-Output "Filelist is empty."
+        else{
+            Write-Output "Filelist is empty."
+        }
     }
 }
 
