@@ -74,16 +74,22 @@ foreach($folder in $folderList){
 
     # Null-check the file list from each folder
     if($null -ne $filelist){
+        Write-Output "Filelist:"
+        Write-Output $filelist
         # Iterate file list for each folder
         foreach($file in $filelist){
             # Filter null or empty entries
             if(!([string]::IsNullOrWhiteSpace($file.FullName))){
                 # Add to string, space separated, to run in invocation of nunit3-console
+                Write-Output "Adding $file.Fullname"
                 $testFileString += " "
                 $testFileString += $file.FullName
             }
         }
         $filelist = $null
+    }
+    else{
+        Write-Output "Filelist is empty."
     }
 }
 
