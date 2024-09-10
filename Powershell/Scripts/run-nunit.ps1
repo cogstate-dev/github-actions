@@ -18,8 +18,19 @@ param (
     $testFileFilterPattern = "Cogstate.*.Test.dll",
     [parameter()]
     [string]
-    $testFileFolderFilter = "*bin"
+    $testFileFolderFilter = "*bin",
+    [parameter()]
+    [string]
+    $startInFolder = ""
 )
+
+if (![string]::IsNullOrEmpty($startInFolder) -and (Test-Path -Path $startInFolder -PathType Container)) {
+    Set-Location -Path $startInFolder
+    Write-Host "Switched to directory: $startInFolder" -ForegroundColor Green
+} else {
+    Write-Error "Invalid directory or parameter is empty. Failing build step."  
+    exit 1
+}
 
 #install nunit
 Write-Output "installing nunit"
