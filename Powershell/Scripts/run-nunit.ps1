@@ -41,8 +41,6 @@ catch{
     }
     exit $LASTEXITCODE
 }
-#instantiate empty string for the file string
-$testFileString = ""
 
 #write output the current working directory
 Write-Output "The current powershell working directory is: $PWD"
@@ -54,6 +52,9 @@ $folderList = $(get-childitem -filter $testFileFolderFilter -recurse -directory)
 if($null -eq $folderList){
     Write-output "The list is empty. Check to make sure the base directory to make sure the test File Folder Filter is applicable."
 }
+
+#instantiate empty string for the file string
+$testFileString = ""
 
 #iterate Folder list
 foreach($folder in $folderList){
@@ -72,8 +73,10 @@ foreach($folder in $folderList){
         }
         $filelist = $null
     }
-
 }
+
+Write-Output "testFileString:"
+Write-Output $testFileString
 
 #call nunit3-console
 Invoke-Expression "$nunitPath $testFileString --where `"$nunitExpression`" --skipnontestassemblies --config $nunitAppConfigFile"
