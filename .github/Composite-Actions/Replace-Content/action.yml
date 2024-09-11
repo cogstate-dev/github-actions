@@ -1,0 +1,44 @@
+name: 'Replace Content'
+description: 'Replaces content in files using regex expressions or literal text'
+author: 'Neal Ganslaw'
+
+inputs:
+  SEARCH_PATTERN:
+    description: 'The pattern to search for in the files. If `USE_REGEX_ESCAPE` is set to `false`, this will be treated as a regular expression. Example: add\s+key="BASE_PATH"\s+value="([^"]*)". If `USE_REGEX_ESCAPE` is `true`, it will treat the input as a literal string to search for.'
+    required: true
+  REPLACE_TEXT:
+    description: 'The text that will replace the `SEARCH_PATTERN`. If there are regex capture groups in `SEARCH_PATTERN`, you can reference them in `REPLACE_TEXT` using $1, $2, etc. Example: add key="BASE_PATH" value="$1".'
+    required: true
+  FILE_FILTER:
+    description: 'The file pattern to search for. Example: *.config, *.json'
+    required: true
+  START_DIRECTORY:
+    description: 'The directory to start the search in. Default is the current working directory ($PWD).'
+    default: '$PWD'
+    required: false
+  USE_REGEX_ESCAPE:
+    description: 'Set to `true` to escape the search pattern, treating it as a literal string rather than a regular expression. Default is `false`.'
+    default: 'false'
+    required: false
+  FAIL_NOT_FOUND:
+    description: 'Set to `true` to fail the action if no files containing the `SEARCH_PATTERN` are found. Default is `false`.'
+    default: 'false'
+    required: false
+
+runs:
+  using: 'composite'
+  steps:
+    - run: |
+        $useRegexEscape = if ("${{ inputs.USE_REGEX_ESCAPE }}" -eq "true") { $true } else { $false }
+        $failNotFound = if ("${{ inputs.FAIL_NOT_FOUND }}" -eq "true") { $true } else { $false }
+
+        # Call the PowerShell script with params
+        ${{ github.action_path }}/../../../Powershell/Scripts/Replace-Content.ps1 `
+          -searchPattern "${{ inputs.SEARCH_PATTERN }}" `
+          -replaceText "${{ inputs.REPLACE_TEXT }}" `
+          -fileFilter "${{ inputs.FILE_FILTER }}" `
+          -startDirectory "${{ inputs.START_DIRECTORY }}" `
+          -useRegexEscape $useRegexEscape `
+          -failIfNotFound $failNotFound
+      shell: |
+        pwsh -noninteractive -command "try {{ $ErrorActionPreference='Stop'; . '{0}' }} catch {{ Write-Error ""FAILED: $_""; throw; }} if ((Test-Path -LiteralPath variable:\LASTEXITCODE)) {{ exit $LASTEXITCODE }}"
