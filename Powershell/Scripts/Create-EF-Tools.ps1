@@ -28,13 +28,14 @@ $packagesDir = "..\packages\EntityFramework.$($efVersion)"
 
 # Files to exclude
 $excludedFiles = @(
-    "$binDir\EntityFramework.dll",
-    "$binDir\EntityFramework.SqlServer.dll"
+    "EntityFramework.dll",
+    "EntityFramework.SqlServer.dll"
 )
 
 $filesToCopy = Get-ChildItem -Path "$binDir\*.dll" | Where-Object {
-    -not $excludedFiles -contains $_.FullName
+    $excludedFiles -notcontains $_.Name
 }
+
 foreach ($file in $filesToCopy) {
     Copy-Item -Path $file.FullName -Destination $toolsDir
     Write-Output "Copied $($file.FullName) to $toolsDir"
