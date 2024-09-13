@@ -23,13 +23,13 @@ param (
     [string]
     $startInFolder = ""
 )
-
-if (![string]::IsNullOrEmpty($startInFolder) -and (Test-Path -Path $startInFolder -PathType Container)) {
-    Set-Location -Path $startInFolder
-    Write-Host "Switched to directory: $startInFolder" -ForegroundColor Green
-} else {
-    Write-Error "Invalid directory or parameter is empty. Failing build step."  
+if (-not (Test-Path -Path $startDirectory)) {
+    Write-Error "The start directory $startDirectory does not exist."
     exit 1
+}
+else {
+    Set-Location -Path $startInFolder
+    Write-Output "Changed to $startInFolder"
 }
 
 #install nunit
