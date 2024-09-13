@@ -38,7 +38,7 @@ runs:
           -searchPattern '${{ inputs.SEARCH_PATTERN }}' `
           -replaceText '${{ inputs.REPLACE_TEXT }}' `
           -fileFilter '${{ inputs.FILE_FILTER }}' `
-          -startDirectory '$startDirectory' `
+          -startDirectory $startDirectory `
           -useRegexEscape $useRegexEscape `
           -failIfNotFound $failNotFound
       shell: |
