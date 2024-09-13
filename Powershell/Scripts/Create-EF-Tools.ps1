@@ -50,7 +50,8 @@ else {
 
 # Copy all files from lib\dotNetVersion\ in EntityFramework package
 $netVersionDirectory = "$packagesDir\lib\$dotNetVersion"
-if (Test-Path $net45Dir) {
+Write-Output "netVersionDirectory : $netVersionDirectory"
+if (Test-Path $netVersionDirectory) {
     Copy-Item -Path "$netVersionDirectory\*.*" -Destination $toolsDir -Recurse
     Write-Output "Copied all files from $netVersionDirectory to $toolsDir"
 } 
