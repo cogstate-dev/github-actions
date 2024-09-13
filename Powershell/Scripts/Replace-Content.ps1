@@ -18,7 +18,8 @@ param (
     [Parameter()]
     [Bool] $useRegexEscape = $false
 )
-
+Write-Output "Search Pattern: $searchPattern"
+Write-Output "Replace Text: $replaceText"
 # Check if the start directory exists
 if (-not (Test-Path -Path $startDirectory)) {
     Write-Error "The start directory '$startDirectory' does not exist."
