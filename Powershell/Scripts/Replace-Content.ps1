@@ -18,12 +18,16 @@ param (
     [Parameter()]
     [Bool] $useRegexEscape = $false
 )
-Write-Output "Search Pattern: $searchPattern"
-Write-Output "Replace Text: $replaceText"
-Write-Output "FileFilter: $fileFilter"
+$searchPattern = $searchPattern.Trim()
+$replaceText = $replaceText.Trim()
+$fileFilter = $fileFilter.Trim()
+
+Write-Output "Search Pattern ___$($searchPattern)___"
+Write-Output "Replace Text ___$($replaceText)___"
+Write-Output "FileFilter: ___$($fileFilter)___"
 # Check if the start directory exists
 if (-not (Test-Path -Path $startDirectory)) {
-    Write-Error "The start directory '$startDirectory' does not exist."
+    Write-Error "The start directory $startDirectory does not exist."
     exit 1
 }
 else {
@@ -46,7 +50,7 @@ else {
         [regex]::new($searchPattern) | Out-Null
     }
     catch {
-        Write-Error "The search pattern '$searchPattern' is not a valid regular expression."
+        Write-Error "The search pattern $searchPattern is not a valid regular expression."
         exit 1
     }
 }
