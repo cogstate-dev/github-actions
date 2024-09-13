@@ -1,10 +1,10 @@
 [CmdletBinding()]
 param (
     [Parameter()]
-    [String] $searchPattern = "",
+    [String] $searchPattern,
 
     [Parameter()]
-    [String] $replaceText = "",
+    [String] $replaceText,
 
     [Parameter()]
     [String] $fileFilter = "*.config",
@@ -56,10 +56,16 @@ else {
 $files = Get-ChildItem -Path $startDirectory -Recurse -Filter $fileFilter
 if ($files.Count -gt 0) {
     Write-Output "Found $($files.Count) matching files"
-    $files | ForEach-Object { Write-host $_.FullName }
 } 
 else {
-    Write-Output "No files were found that match the filter: $fileFilter in $startDirectory"
+    $message =  "No files were found that match the filter: $fileFilter in $startDirectory"
+    if ($failIfNotFound) {
+        Write-Error $message
+        exit 1
+    }
+    else {
+        Write-Output $message
+    }
 }
 # Initialize an array to track affected files
 $affectedFiles = @()
@@ -83,15 +89,16 @@ foreach ($file in $files) {
 
 # Output the list of affected files
 if ($affectedFiles.Count -gt 0) {
-    Write-Output "Files that contained '$searchPattern' and were updated:"
-    $affectedFiles | ForEach-Object { Write-Output $_ }
+    Write-Output "Changed $($affectedFiles.Count) files that contained $searchPattern"
+    $affectedFiles | ForEach-Object { Write-Debug $_ }
 } 
 else {
+    $message = "0 of $($files.Count) files contained $searchPattern."
     if ($failIfNotFound) {
-        Write-Error "No files contained '$searchPattern'."
+        Write-Error $message
         exit 1
     }
     else {
-        Write-Output "No files contained '$searchPattern'."
+        Write-Output $message
     }
 }
