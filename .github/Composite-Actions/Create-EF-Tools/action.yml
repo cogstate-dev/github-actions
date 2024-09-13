@@ -1,0 +1,37 @@
+name: 'Create-EF-Tools'
+description: 'Manually assembles the EF tools directory for .net framework EF migrations so database migrations can be run in the CI'
+author: 'Neal Ganslaw'
+
+inputs:
+  EF_VERSION:
+    description: 'The EF version to look for. Example 6.1.3'
+    default: '6.1.3'
+    required: false
+  START_DIRECTORY:
+    description: 'The directory to start the process in. Default is current directory'
+    default: '.'
+    required: false
+  DOTNET_VERSION:
+    description: 'The dot net version. example net45'
+    default: 'net45'
+    required: false
+  FAIL_NOT_FOUND:
+    description: 'Set to `true` to fail the action if no the tools folder cannot be assembled'
+    default: 'false'
+    required: false
+
+runs:
+  using: 'composite'
+  steps:
+    - run: |
+        $failNotFound = if ("${{ inputs.FAIL_NOT_FOUND }}" -eq "true") { $true } else { $false }
+        $startDirectory = if ("${{ inputs.START_DIRECTORY }}" -eq ".") { Get-Location } else { "${{ inputs.START_DIRECTORY }}" }
+
+        # Call the PowerShell script with params using single quotes for literal strings
+        ${{ github.action_path }}/../../../Powershell/Scripts/Create-EF-Tools.ps1 `
+          -efversion '${{ inputs.EF_VERSION }}' `
+          -dotnetVersion '${{ inputs.DOTNET_VERSION }}' `
+          -startDirectory $startDirectory `
+          -failIfNotFound $failNotFound
+      shell: |
+        pwsh -noninteractive -command "try {{ $ErrorActionPreference='Stop'; . '{0}' }} catch {{ Write-Error ""FAILED: $_""; throw; }} if ((Test-Path -LiteralPath variable:\LASTEXITCODE)) {{ exit $LASTEXITCODE }}"
