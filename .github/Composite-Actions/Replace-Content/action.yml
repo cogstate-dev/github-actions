@@ -14,7 +14,7 @@ inputs:
     required: true
   START_DIRECTORY:
     description: 'The directory to start the search in. Default is the current working directory ($PWD).'
-    default: '$PWD'
+    default: '.'
     required: false
   USE_REGEX_ESCAPE:
     description: 'Set to `true` to escape the search pattern, treating it as a literal string rather than a regular expression. Default is `false`.'
@@ -31,13 +31,14 @@ runs:
     - run: |
         $useRegexEscape = if ("${{ inputs.USE_REGEX_ESCAPE }}" -eq "true") { $true } else { $false }
         $failNotFound = if ("${{ inputs.FAIL_NOT_FOUND }}" -eq "true") { $true } else { $false }
+        $startDirectory = if ("${{ inputs.START_DIRECTORY }}" -eq ".") { Get-Location } else { "${{ inputs.START_DIRECTORY }}" }
 
         # Call the PowerShell script with params using single quotes for literal strings
         ${{ github.action_path }}/../../../Powershell/Scripts/Replace-Content.ps1 `
           -searchPattern '${{ inputs.SEARCH_PATTERN }}' `
           -replaceText '${{ inputs.REPLACE_TEXT }}' `
           -fileFilter '${{ inputs.FILE_FILTER }}' `
-          -startDirectory '${{ inputs.START_DIRECTORY }}' `
+          -startDirectory $startDirectory `
           -useRegexEscape $useRegexEscape `
           -failIfNotFound $failNotFound
       shell: |
