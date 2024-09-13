@@ -54,7 +54,13 @@ else {
 
 # Get all files that match $fileFilter recursively starting in the $startDirectory
 $files = Get-ChildItem -Path $startDirectory -Recurse -Filter $fileFilter
-
+if ($files.Count -gt 0) {
+    Write-Output "Found $($files.Count) matching files"
+    $files | ForEach-Object { Write-host $_.FullName }
+} 
+else {
+    Write-Output "No files were found that match the filter: $fileFilter in $startDirectory"
+}
 # Initialize an array to track affected files
 $affectedFiles = @()
 
