@@ -20,10 +20,14 @@ param (
 )
 Write-Output "Search Pattern: $searchPattern"
 Write-Output "Replace Text: $replaceText"
+Write-Output "FileFilter: $fileFilter"
 # Check if the start directory exists
 if (-not (Test-Path -Path $startDirectory)) {
     Write-Error "The start directory '$startDirectory' does not exist."
     exit 1
+}
+else {
+    Write-Output "startDirectory: $startDirectory "
 }
 
 # Check if the file filter is a valid non-empty string
@@ -46,6 +50,7 @@ else {
         exit 1
     }
 }
+ 
 
 # Get all files that match $fileFilter recursively starting in the $startDirectory
 $files = Get-ChildItem -Path $startDirectory -Recurse -Filter $fileFilter
