@@ -21,10 +21,10 @@ param (
     $testFileFolderFilter = "*bin",
     [parameter()]
     [string]
-    $startInFolder = ""
+    $startInFolder
 )
-if (-not (Test-Path -Path $startDirectory)) {
-    Write-Error "The start directory $startDirectory does not exist."
+if (-not (Test-Path -Path $startInFolder)) {
+    Write-Error "The start directory $startInFolder does not exist."
     exit 1
 }
 else {
