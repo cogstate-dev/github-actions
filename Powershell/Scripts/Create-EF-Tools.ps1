@@ -5,7 +5,9 @@ param (
     [Parameter()]
     [String] $startDirectory, 
     [Parameter()]
-    [String] $dotNetVersion 
+    [String] $dotNetVersion,
+    [Parameter()]
+    [bool] $failIfNotFound
 )
 
 
@@ -15,7 +17,8 @@ $toolsDir = "tools"
 if (-not (Test-Path -Path $toolsDir)) {
     New-Item -Path $toolsDir -ItemType Directory
     Write-Output "Created 'tools' directory."
-} else {
+}
+else {
     Write-Output "'tools' directory already exists."
 }
 
@@ -40,7 +43,8 @@ foreach ($file in $filesToCopy) {
 if (Test-Path "NLog.config") {
     Copy-Item -Path "NLog.config" -Destination $toolsDir
     Write-Output "Copied NLog.config to $toolsDir"
-} else {
+}
+else {
     Write-Output "NLog.config not found."
 }
 
@@ -49,8 +53,16 @@ $netVersionDirectory = "$packagesDir\lib\$dotNetVersion"
 if (Test-Path $net45Dir) {
     Copy-Item -Path "$netVersionDirectory\*.*" -Destination $toolsDir -Recurse
     Write-Output "Copied all files from $netVersionDirectory to $toolsDir"
-} else {
-    Write-Output "$netVersionDirectory directory not found."
+} 
+else {
+    $errorMessage = "$netVersionDirectory directory not found."
+    if ($failIfNotFound) {
+        Write-Error $errorMessage
+        exit 1
+    }
+    else {
+        Write-Output $errorMessage
+    }
 }
 
 # Copy migrate.exe from the EntityFramework tools directory
@@ -58,6 +70,14 @@ $migrateExePath = "$packagesDir\tools\migrate.exe"
 if (Test-Path $migrateExePath) {
     Copy-Item -Path $migrateExePath -Destination $toolsDir
     Write-Output "Copied migrate.exe to $toolsDir"
-} else {
-    Write-Output "migrate.exe not found."
+}
+else {
+    $errorMessage = "migrate.exe not found."
+    if ($failIfNotFound) {
+        Write-Error $errorMessage
+        exit 1
+    }
+    else {
+        Write-Output $errorMessage
+    }
 }
