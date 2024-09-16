@@ -38,68 +38,49 @@ nuget.exe install NUnit -Version 4.0.1 -Source $nugetSource -OutputDirectory $PW
 Write-Output "nunit installed complete"
 
 
-try{
+try {
     [string]$nunitPath = $(Get-ChildItem -Path $PWD -Filter nunit3-console.exe -Recurse | Where-Object { $_.DirectoryName -like '*NUnit.ConsoleRunner.3.6.1*' }).fullname
     write-output "nunitPath: $nunitPath"
 }
-catch{
+catch {
     write-output "Either Nunit3-console is not there, or there are multiple instances found and it's returning an array"
-    if($nunitPath.Length -le 0){
+    if ($nunitPath.Length -le 0) {
         Write-Output "Determination: the Nunit3-console is not there"
     }
-    if($nunitPath.Length -gt 1){
+    if ($nunitPath.Length -gt 1) {
         Write-Output "Determination: there are multiple Nunit3-console instances"
     }
     exit $LASTEXITCODE
 }
 
+# Define the search path
+$searchPath = $pwd
+
 #write output the current working directory
-Write-Output "The current powershell working directory is: $PWD"
+Write-Output "The current powershell working directory is: $searchPath"
 
-#get all folders with file folder filter
-#$folderList = $(get-childitem -filter $testFileFolderFilter -recurse -directory).fullname
- 
-$folderList = Get-ChildItem -Path $pwd -Filter "*.dll" -Recurse | 
-              Where-Object { $_.FullName -match "\\bin\\(Debug|Release)\\" } | 
-              Select-Object -ExpandProperty DirectoryName -Unique
+$dllPatterns = $testFileFilterPattern -split ',' | ForEach-Object { $_.Trim() }
 
+# Get all DLL files in the directory and subdirectories
+$allDllFiles = Get-ChildItem -Path $searchPath -Filter "*.dll" -Recurse
 
-#null check the folderlist
-if($null -eq $folderList){
-    Write-output "The folderlist was empty for $testFileFolderFilter. Check to make sure the base directory to make sure the test File Folder Filter is applicable."
+# Filter DLL files based on bin\Debug or bin\Release directories and the patterns in $dllPatterns
+$filteredDllFiles = $allDllFiles | Where-Object {
+    $_.FullName -match "\\bin\\(Debug|Release)\\" -and 
+    ($dllPatterns | ForEach-Object { $_ -like $_.Name })
 }
 
-#instantiate empty string for the file string
-$testFileString = ""
+# Get only the full paths of the filtered DLL files
+$foundDlls = $filteredDllFiles | Select-Object -ExpandProperty FullName
 
-#iterate Folder list
-foreach($folder in $folderList){
-    $patterns = $testFileFilterPattern -split ','
-    
-    # Generate file list based on folders and patterns
-    foreach($pattern in $patterns){
-        $filelist = Get-ChildItem -path $folder -Include $pattern.Trim()
-        Write-Output "Filelist Post-Filter:"
-        Write-Output $filelist
-        # Null-check the file list from each folder
-        if($null -ne $filelist){
-            # Iterate file list for each folder
-            foreach($file in $filelist){
-                # Filter null or empty entries
-                if(!([string]::IsNullOrWhiteSpace($file.FullName))){
-                    # Add to string, space separated, to run in invocation of nunit3-console
-                    Write-Output "Adding $file.Fullname"
-                    $testFileString += " "
-                    $testFileString += $file.FullName
-                }
-            }
-            $filelist = $null
-        }
-        else{
-            Write-Output "Filelist for $testFileFilterPattern in $folder is empty."
-        }
-    }
+#null check the foundDlls
+if ($null -eq $foundDlls) {
+    Write-output "Could not find any files matching $testFileFilterPattern  . Check to make sure the base directory to make sure the test File Folder Filter is applicable."
+    exit 1
 }
+
+# create a string of the dlls, each separated by a space
+$testFileString = $foundDlls -join " "
 
 
 Write-Output "testFileString:"
