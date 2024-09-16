@@ -61,7 +61,7 @@ $folderList = $(get-childitem -filter $testFileFolderFilter -recurse -directory)
 
 #null check the folderlist
 if($null -eq $folderList){
-    Write-output "The list is empty. Check to make sure the base directory to make sure the test File Folder Filter is applicable."
+    Write-output "The folderlist was empty for $testFileFolderFilter. Check to make sure the base directory to make sure the test File Folder Filter is applicable."
 }
 
 #instantiate empty string for the file string
@@ -91,7 +91,7 @@ foreach($folder in $folderList){
             $filelist = $null
         }
         else{
-            Write-Output "Filelist is empty."
+            Write-Output "Filelist for $testFileFilterPattern in $folder is empty."
         }
     }
 }
