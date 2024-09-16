@@ -57,7 +57,12 @@ catch{
 Write-Output "The current powershell working directory is: $PWD"
 
 #get all folders with file folder filter
-$folderList = $(get-childitem -filter $testFileFolderFilter -recurse -directory).fullname
+#$folderList = $(get-childitem -filter $testFileFolderFilter -recurse -directory).fullname
+ 
+$folderList = Get-ChildItem -Path $pwd -Filter "*.dll" -Recurse | 
+              Where-Object { $_.FullName -match "\\bin\\(Debug|Release)\\" } | 
+              Select-Object -ExpandProperty DirectoryName -Unique
+
 
 #null check the folderlist
 if($null -eq $folderList){
@@ -73,7 +78,7 @@ foreach($folder in $folderList){
     
     # Generate file list based on folders and patterns
     foreach($pattern in $patterns){
-        $filelist = Get-ChildItem -path $folder -Include $pattern
+        $filelist = Get-ChildItem -path $folder -Include $pattern.Trim()
         Write-Output "Filelist Post-Filter:"
         Write-Output $filelist
         # Null-check the file list from each folder
