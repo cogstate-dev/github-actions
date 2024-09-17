@@ -117,15 +117,15 @@ Write-Output $testFileString
 #    Write-Output "$nunitPath $testFileString --where `"$nunitExpression`" --skipnontestassemblies "
 #    Invoke-Expression "$nunitPath $testFileString --where `"$nunitExpression`" --skipnontestassemblies"
 #}
+Write-Output "----------dotcover command -----------"
+Write-Output   "$dotCoverPath cover --targetExecutable=`"$nunitPath`" `
+--targetArguments=`"$testFileString --result=TestResult.xml --where `"$nunitExpression`"` `
+--output=`"dotCoverReport.dcvr`" `
+--reportType=`"DetailedXML`" `
+--returnTargetExitCode"
 
-Write-Output "$dotCoverPath cover--targetExecutable="$nunitPath" \
-     --targetArguments="$testFileString --result=TestResult.xml --where `"$nunitExpression`"" \
-     --output="dotCoverReport.dcvr" \  
-     --reportType="DetailedXML"   \
-     --returnTargetExitCode"
-     
-Invoke-Expression "$dotCoverPath cover--targetExecutable="$nunitPath" \
-     --targetArguments="$testFileString --result=TestResult.xml --where `"$nunitExpression`"" \
-     --output="dotCoverReport.dcvr" \  
-     --reportType="DetailedXML"   \
-     --returnTargetExitCode"
+Invoke-Expression "$dotCoverPath cover --targetExecutable=`"$nunitPath`" `
+    --targetArguments=`"$testFileString --result=TestResult.xml --where `"$nunitExpression`"` `
+    --output=`"dotCoverReport.dcvr`" `
+    --reportType=`"DetailedXML`" `
+    --returnTargetExitCode"
