@@ -9,7 +9,7 @@ inputs:
     description: 'nunit expression in Test Expresison Language: https://docs.nunit.org/articles/nunit/running-tests/Test-Selection-Language.html. Example: "cat == Unit||cat == Test_Unit"'
   NUNIT_APP_CONFIG_FILE:
     description: 'File location for the app config. Example: "Cogstate.Platform/Cogstate.Tests.WebApi/App.config"'
-    required: true
+    required: false
   NUGET_CONFIG_FULL_PATH:
     description: 'full path to the nuget.config file. Example: "$PWD\nuget.config"'
     default: '$PWD\nuget.config'
