@@ -39,9 +39,7 @@ Write-Output "nunit installed complete"
 
 
 try {
-#    [string]$nunitPath = $(Get-ChildItem -Path $PWD -Filter nunit3-console.exe -Recurse | Where-Object { $_.DirectoryName -like '*NUnit.ConsoleRunner.3.6.1*' }).fullname
-    [string]$nunitPath = $(Get-ChildItem -Path $PWD -Filter nunit3-console.exe -Recurse | Where-Object { $_.DirectoryName -like '*NUnit.ConsoleRunner.3.9.0*' }).fullname
-
+    [string]$nunitPath = $(Get-ChildItem -Path $PWD -Filter nunit3-console.exe -Recurse | Where-Object { $_.DirectoryName -like '*NUnit.ConsoleRunner.3.6.1*' }).fullname
     write-output "nunitPath: $nunitPath"
 }
 catch {
@@ -54,7 +52,7 @@ catch {
     }
     exit $LASTEXITCODE
 }
-
+$dotCoverPath = "D:\BuildAgent\tools\JetBrains.dotCover.CommandLineTools.bundled\dotCover.exe"
 # Define the search path
 $searchPath = $pwd
 
@@ -101,6 +99,8 @@ if ($null -eq $foundDlls) {
     exit 1
 }
 
+
+
 # create a string of the dlls, each separated by a space
 $testFileString = $foundDlls -join " "
 
@@ -109,11 +109,23 @@ Write-Output "testFileString:"
 Write-Output $testFileString
 
 #call nunit3-console
-if ($nunitAppConfigFile -ne ""){
-    Write-Output "$nunitPath $testFileString --where `"$nunitExpression`" --skipnontestassemblies --config $nunitAppConfigFile"
-    Invoke-Expression "$nunitPath $testFileString --where `"$nunitExpression`" --skipnontestassemblies --config $nunitAppConfigFile"
-}
-else {
-    Write-Output "$nunitPath $testFileString --where `"$nunitExpression`" --skipnontestassemblies "
-    Invoke-Expression "$nunitPath $testFileString --where `"$nunitExpression`" --skipnontestassemblies"
-}
+#if (-not $nunitAppConfigFile -or $nunitAppConfigFile -eq ""){
+#    Write-Output "$nunitPath $testFileString --where `"$nunitExpression`" --skipnontestassemblies --config $nunitAppConfigFile"
+#    Invoke-Expression "$nunitPath $testFileString --where `"$nunitExpression`" --skipnontestassemblies --config $nunitAppConfigFile"
+#}
+#else {
+#    Write-Output "$nunitPath $testFileString --where `"$nunitExpression`" --skipnontestassemblies "
+#    Invoke-Expression "$nunitPath $testFileString --where `"$nunitExpression`" --skipnontestassemblies"
+#}
+
+Write-Output "$dotCoverPath cover--targetExecutable="$nunitPath" \
+     --targetArguments="$testFileString --result=TestResult.xml --where `"$nunitExpression`"" \
+     --output="dotCoverReport.dcvr" \  
+     --reportType="DetailedXML"   \
+     --returnTargetExitCode"
+     
+Invoke-Expression "$dotCoverPath cover--targetExecutable="$nunitPath" \
+     --targetArguments="$testFileString --result=TestResult.xml --where `"$nunitExpression`"" \
+     --output="dotCoverReport.dcvr" \  
+     --reportType="DetailedXML"   \
+     --returnTargetExitCode"
