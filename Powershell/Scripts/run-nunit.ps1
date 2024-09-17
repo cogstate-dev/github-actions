@@ -12,7 +12,7 @@ param (
     $nugetConfigFullPath = "$pwd\nuget.config",
     [parameter()]
     [string]
-    $nunitAppConfigFile = "Cogstate.Platform/Cogstate.Tests.WebApi/App.config",
+    $nunitAppConfigFile,
     [parameter()]
     [string]
     $testFileFilterPattern = "Cogstate.*.Test.dll",
@@ -39,7 +39,9 @@ Write-Output "nunit installed complete"
 
 
 try {
-    [string]$nunitPath = $(Get-ChildItem -Path $PWD -Filter nunit3-console.exe -Recurse | Where-Object { $_.DirectoryName -like '*NUnit.ConsoleRunner.3.6.1*' }).fullname
+#    [string]$nunitPath = $(Get-ChildItem -Path $PWD -Filter nunit3-console.exe -Recurse | Where-Object { $_.DirectoryName -like '*NUnit.ConsoleRunner.3.6.1*' }).fullname
+    [string]$nunitPath = $(Get-ChildItem -Path $PWD -Filter nunit3-console.exe -Recurse | Where-Object { $_.DirectoryName -like '*NUnit.ConsoleRunner.3.9.0*' }).fullname
+
     write-output "nunitPath: $nunitPath"
 }
 catch {
@@ -73,7 +75,7 @@ foreach ($dllFile in $allDllFiles) {
     if ($dllFile.FullName -match "\\bin\\(Debug|Release)\\") {
         # Iterate over each pattern in $dllPatterns
         foreach ($pattern in $dllPatterns) {
-            if ($pattern -like "*.*.*") {
+            if ($pattern -match '\*') {
                 # If the pattern contains wildcards, use -like to match
                 if ($dllFile.Name -like $pattern) {
                     $filteredDllFiles += $dllFile
@@ -107,4 +109,11 @@ Write-Output "testFileString:"
 Write-Output $testFileString
 
 #call nunit3-console
-Invoke-Expression "$nunitPath $testFileString --where `"$nunitExpression`" --skipnontestassemblies --config $nunitAppConfigFile"
+if ($nunitAppConfigFile -ne ""){
+    Write-Output "$nunitPath $testFileString --where `"$nunitExpression`" --skipnontestassemblies --config $nunitAppConfigFile"
+    Invoke-Expression "$nunitPath $testFileString --where `"$nunitExpression`" --skipnontestassemblies --config $nunitAppConfigFile"
+}
+else {
+    Write-Output "$nunitPath $testFileString --where `"$nunitExpression`" --skipnontestassemblies "
+    Invoke-Expression "$nunitPath $testFileString --where `"$nunitExpression`" --skipnontestassemblies"
+}
