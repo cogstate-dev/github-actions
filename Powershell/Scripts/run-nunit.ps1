@@ -64,10 +64,30 @@ $dllPatterns = $testFileFilterPattern -split ',' | ForEach-Object { $_.Trim() }
 # Get all DLL files in the directory and subdirectories
 $allDllFiles = Get-ChildItem -Path $searchPath -Filter "*.dll" -Recurse
 
-# Filter DLL files based on bin\Debug or bin\Release directories and the patterns in $dllPatterns
-$filteredDllFiles = $allDllFiles | Where-Object {
-    $_.FullName -match "\\bin\\(Debug|Release)\\" -and 
-    ($dllPatterns | ForEach-Object { $_ -like $_.Name })
+# Define an empty list to store the filtered DLL files
+$filteredDllFiles = @()
+
+
+foreach ($dllFile in $allDllFiles) {
+    # Check if the DLL file is in the Debug or Release directories
+    if ($dllFile.FullName -match "\\bin\\(Debug|Release)\\") {
+        # Iterate over each pattern in $dllPatterns
+        foreach ($pattern in $dllPatterns) {
+            if ($pattern -like "*.*.*") {
+                # If the pattern contains wildcards, use -like to match
+                if ($dllFile.Name -like $pattern) {
+                    $filteredDllFiles += $dllFile
+                    break  # Exit the inner loop once a match is found
+                }
+            } else {
+                # For exact matches, use -eq
+                if ($dllFile.Name -eq $pattern) {
+                    $filteredDllFiles += $dllFile
+                    break  # Exit the inner loop once a match is found
+                }
+            }
+        }
+    }
 }
 
 # Get only the full paths of the filtered DLL files
