@@ -92,15 +92,6 @@ foreach ($dllFile in $allDllFiles) {
         }
     }
 }
-
-
-
-#null check the foundDlls
-if ($null -eq $foundDlls) {
-    Write-output "Could not find any files matching $testFileFilterPattern  . Check to make sure the base directory to make sure the test File Folder Filter is applicable."
-    exit 1
-}
-
  
 #call nunit3-console
 #if (-not $nunitAppConfigFile -or $nunitAppConfigFile -eq ""){
@@ -116,6 +107,11 @@ if ($null -eq $foundDlls) {
 
  # Get only the full paths of the filtered DLL files
   $testFileList = $filteredDllFiles | Select-Object -ExpandProperty FullName
+  #null check the testFileList
+if (0 -eq $testFileList.Count) {
+    Write-output "Could not find any files matching $testFileFilterPattern  . Check to make sure the base directory to make sure the test File Folder Filter is applicable."
+    exit 1
+}
    
 # Loop through each test DLL and run dotCover for each one separately
 foreach ($testFile in $testFileList) {
