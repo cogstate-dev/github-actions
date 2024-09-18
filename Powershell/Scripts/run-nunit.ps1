@@ -21,7 +21,10 @@ param (
     $testFileFolderFilter = "*bin",
     [parameter()]
     [string]
-    $startInFolder
+    $startInFolder,
+    [parameter()]
+    [string]
+    $dotCoverPath = "D:\BuildAgent\tools\JetBrains.dotCover.CommandLineTools.bundled\dotCover.exe" 
 )
 if (-not (Test-Path -Path $startInFolder)) {
     Write-Error "The start directory $startInFolder does not exist."
@@ -90,8 +93,7 @@ foreach ($dllFile in $allDllFiles) {
     }
 }
 
-# Get only the full paths of the filtered DLL files
-$foundDlls = $filteredDllFiles | Select-Object -ExpandProperty FullName
+
 
 #null check the foundDlls
 if ($null -eq $foundDlls) {
@@ -99,15 +101,7 @@ if ($null -eq $foundDlls) {
     exit 1
 }
 
-
-
-# create a string of the dlls, each separated by a space
-$testFileString = $foundDlls -join " "
-
-
-Write-Output "testFileString:"
-Write-Output $testFileString
-
+ 
 #call nunit3-console
 #if (-not $nunitAppConfigFile -or $nunitAppConfigFile -eq ""){
 #    Write-Output "$nunitPath $testFileString --where `"$nunitExpression`" --skipnontestassemblies --config $nunitAppConfigFile"
@@ -118,17 +112,36 @@ Write-Output $testFileString
 #    Invoke-Expression "$nunitPath $testFileString --where `"$nunitExpression`" --skipnontestassemblies"
 #}
 
-$command = @"
-$dotCoverPath cover `
-    --targetExecutable `"$nunitPath`" `
-    --targetArguments `"$testFileString --result=TestResult.xml --where 'cat==Build'`" `
-    --output `".\dotCoverReport.dcvr`" `
-    --reportType `DetailedXML` `
-    --returnTargetExitCode
-"@
-
-
-Write-Output "----------dotcover command -----------"
-Write-Output  $command
  
-Invoke-Expression $command
+
+ # Get only the full paths of the filtered DLL files
+  $testFileList = $filteredDllFiles | Select-Object -ExpandProperty FullName
+   
+# Loop through each test DLL and run dotCover for each one separately
+foreach ($testFile in $testFileList) {
+    & $dotCoverPath cover `
+        --targetExecutable="$nunitPath" `
+        --output="dotCoverReport_$($testFile | Split-Path -Leaf).dcvr" `
+        --reportType="DetailedXML" `
+        --returnTargetExitCode `
+        -- $testFile --result=TestResult_$($testFile | Split-Path -Leaf).xml --where $nunitExpression
+}
+
+ # Merge the coverage reports into one file (optional step)
+ 
+$coverageFiles = @()
+foreach ($testFile in $testFileList) {
+    # Generate the corresponding coverage report file name based on the test DLL
+    $coverageFile = "dotCoverReport_$($testFile | Split-Path -Leaf).dcvr"
+    
+    # Add the coverage file name to the $coverageFiles list
+    $coverageFiles += $coverageFile
+}
+
+
+$coverageFileList = $coverageFiles -join ' '
+
+& $dotCoverPath merge `
+    --source $coverageFileList `
+    --output="MergedCoverageReport.dcvr" `
+    --reportType="DetailedXML"
