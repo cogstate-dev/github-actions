@@ -404,7 +404,8 @@ function Invoke-ConfigTransformation {
 
 function New-VersionsJson {
     param (
-        [string]$version
+        [string]$version,
+        [string]$directory = '.'
     )
 
     
@@ -449,7 +450,7 @@ function New-VersionsJson {
     $jsonString = $jsonObject | ConvertTo-Json -Depth 3
 
     # Save to a file
-    $outputFile = "versions.json"
+    $outputFile = Join-Path -Path $directory -ChildPath "versions.json"
     $jsonString | Out-File -FilePath $outputFile
 
     Write-Output "JSON content saved to $outputFile"

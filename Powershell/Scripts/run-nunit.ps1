@@ -78,7 +78,7 @@ foreach ($dllFile in $allDllFiles) {
         foreach ($pattern in $dllPatterns) {
             if ($pattern -match '\*') {
                 # If the pattern contains wildcards, use -like to match
-                if ($dllFile.Name -like $pattern) {
+                if ($dllFile.FullName -like $pattern) {
                     $filteredDllFiles += $dllFile
                     break  # Exit the inner loop once a match is found
                 }
@@ -107,6 +107,8 @@ foreach ($dllFile in $allDllFiles) {
 
  # Get only the full paths of the filtered DLL files
   $testFileList = $filteredDllFiles | Select-Object -ExpandProperty FullName
+
+  write-output "TestFileList: $testFileList"
   #null check the testFileList
 if (0 -eq $testFileList.Count) {
     Write-output "Could not find any files matching $testFileFilterPattern  . Check to make sure the base directory to make sure the test File Folder Filter is applicable."
