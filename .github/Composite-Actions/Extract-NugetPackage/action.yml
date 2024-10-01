@@ -12,10 +12,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Checkout files on agent
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
     - name: run ExtractNugetPackage
       run: |
         ${{ github.action_path }}/../../../Powershell/Scripts\Extract-NugetPackage.ps1 -nugetPackageOrDirectory ${{ inputs.NUGET_DIR }} -outputDirectory ${{ inputs.OUTPUT_DIR }}

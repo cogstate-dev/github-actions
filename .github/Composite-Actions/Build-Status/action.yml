@@ -1,22 +1,19 @@
-name: 'Build Status'
-description: 'Tags repostitory and shows the build status'
-author: 'Mike Burgess'
+name: "Build Status"
+description: "Tags repostitory and shows the build status"
+author: "Mike Burgess"
 inputs:
   VERSION:
-    description: 'Version for tagging'
+    description: "Version for tagging"
     required: true
 
 runs:
-  using: 'composite'
-  
-  steps:
-    - name: Checkout files on agent
-      uses: actions/checkout@v3
+  using: "composite"
 
-    - name: Tagging repostitory 
+  steps:
+    - name: Tagging repostitory
       run: |
         git tag ${{ inputs.VERSION }} 
-        git push origin ${{ inputs.VERSION }} 
+        git push origin ${{ inputs.VERSION }}
       shell: bash
 
     - name: Show build success
