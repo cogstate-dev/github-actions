@@ -1,0 +1,23 @@
+name: "Extract Nuget Package"
+description: "Extracts Nuget package to the specified folder"
+author: "Neal Ganslaw"
+inputs:
+  NUGET_DIR:
+    description: "Directory name where where nuget package is , or supply specific nuget file"
+    required: true
+  OUTPUT_DIR:
+    description: "Output Directory to extract package to"
+    default: "output"
+    required: false
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout files on agent
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: run ExtractNugetPackage
+      run: |
+        ${{ github.action_path }}/../../../Powershell/Scripts\Extract-NugetPackage.ps1 -nugetPackageOrDirectory ${{ inputs.NUGET_DIR }} -outputDirectory ${{ inputs.OUTPUT_DIR }}
+      shell: |
+        pwsh -noninteractive -command "try {{ $ErrorActionPreference='Stop'; . '{0}' }} catch {{ Write-Error ""FAILED: $_""; throw; }} if ((Test-Path -LiteralPath variable:\LASTEXITCODE)) {{ exit $LASTEXITCODE }}"
