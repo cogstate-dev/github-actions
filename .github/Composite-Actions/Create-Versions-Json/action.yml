@@ -12,10 +12,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Checkout files on agent
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
     - name: test then run set-nugetfeeds.ps1
       run: |
         ${{ github.action_path }}/../../../Powershell/Scripts\Set-Versions-Json.ps1 -version ${{ inputs.VERSION }} -directory ${{ inputs.DIRECTORY }}
