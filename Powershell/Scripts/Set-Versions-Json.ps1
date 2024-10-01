@@ -2,7 +2,10 @@
 param (
     [parameter(Mandatory=$true)]
     [String]
-    $Version
+    $Version,
+    [parameter(Mandatory=$false)]
+    [String]
+    $directory = "."
 )
 
 $WarningPreference = "Continue"
@@ -12,4 +15,4 @@ $DebugPreference = "Continue"
 
 Import-Module $PSScriptRoot\..\modules\Version-Control.psm1
 
-New-VersionsJson -version $Version
+New-VersionsJson -version $Version -directory $directory

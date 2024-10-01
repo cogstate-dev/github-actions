@@ -5,8 +5,8 @@ inputs:
   VERSION:
     description: "Version generated from Set-Branch-Variables"
     required: true
-  BASE_DIRECTORY:
-    description: "Where are the files located"
+  DIRECTORY:
+    description: "Directory where versions.json is located"
     default: "."
     required: false
 runs:
@@ -18,6 +18,6 @@ runs:
         fetch-depth: 0
     - name: test then run set-nugetfeeds.ps1
       run: |
-        ${{ github.action_path }}/../../../Powershell/Scripts\Set-Versions-Json.ps1 -version ${{ inputs.VERSION }} -base_directory ${{ inputs.BASE_DIRECTORY }}
+        ${{ github.action_path }}/../../../Powershell/Scripts\Set-Versions-Json.ps1 -version ${{ inputs.VERSION }} -directory ${{ inputs.DIRECTORY }}
       shell: |
         pwsh -noninteractive -command "try {{ $ErrorActionPreference='Stop'; . '{0}' }} catch {{ Write-Error ""FAILED: $_""; throw; }} if ((Test-Path -LiteralPath variable:\LASTEXITCODE)) {{ exit $LASTEXITCODE }}"
