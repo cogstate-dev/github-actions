@@ -9,8 +9,15 @@ param (
     [Parameter()]
     [bool] $failIfNotFound
 )
+$here = Get-Location
+Write-Output "Current directory: $here "
+Get-ChildItem -Directory | ForEach-Object { $_.FullName } | Write-Output
 
+if (-not (Test-Path -Path $startDirectory)) {
+    Write-Error "The directory $startDirectory is not found"
 
+    exit 1
+}
 Set-Location $startDirectory
 # Create the tools directory
 $toolsDir = "tools"
