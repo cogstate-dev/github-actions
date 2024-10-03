@@ -42,5 +42,5 @@ if (-not (Test-Path -Path $outputDirectory)) {
 Expand-Archive -Path $nupkgFile.FullName -DestinationPath $outputDirectory -Force
 
 Write-Output "Extraction completed successfully to '$outputDirectory'."
-Write-Output "Contents of the output directory:"
-Get-ChildItem -Path $outputDirectory -Recurse | ForEach-Object { Write-Output $_.FullName }
+# Write-Output "Contents of the output directory:"
+# Get-ChildItem -Path $outputDirectory -Recurse | ForEach-Object { Write-Output $_.FullName }
