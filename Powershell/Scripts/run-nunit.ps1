@@ -26,14 +26,6 @@ param (
     [string]
     $dotCoverPath = "D:\BuildAgent\tools\JetBrains.dotCover.CommandLineTools.bundled\dotCover.exe" 
 )
-if (-not (Test-Path -Path $startInFolder)) {
-    Write-Error "The start directory $startInFolder does not exist."
-    exit 1
-}
-else {
-    Set-Location -Path $startInFolder
-    Write-Output "Changed to $startInFolder"
-}
 
 #install nunit
 Write-Output "installing nunit"
@@ -55,6 +47,17 @@ catch {
     }
     exit $LASTEXITCODE
 }
+
+
+if (-not (Test-Path -Path $startInFolder)) {
+    Write-Error "The start directory $startInFolder does not exist."
+    exit 1
+}
+else {
+    Set-Location -Path $startInFolder
+    Write-Output "Changed to $startInFolder"
+}
+
 $dotCoverPath = "D:\BuildAgent\tools\JetBrains.dotCover.CommandLineTools.bundled\dotCover.exe"
 # Define the search path
 $searchPath = $pwd
