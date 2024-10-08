@@ -24,29 +24,50 @@ param (
     $startInFolder,
     [parameter()]
     [string]
-    $dotCoverPath = "D:\BuildAgent\tools\JetBrains.dotCover.CommandLineTools.bundled\dotCover.exe" 
+    $dotCoverPath = "D:\BuildAgent\tools\JetBrains.dotCover.CommandLineTools.bundled\dotCover.exe" ,
+    [Parameter(Mandatory = $false, HelpMessage = "Path to nunit3-console.exe")]
+    [sting]
+    $nunitPath
 )
 
-#install nunit
-Write-Output "installing nunit"
-nuget.exe install NUnit -Version 4.0.1 -Source $nugetSource -OutputDirectory $PWD
-Write-Output "nunit installed complete"
-
-
-try {
-    [string]$nunitPath = $(Get-ChildItem -Path $PWD -Filter nunit3-console.exe -Recurse | Where-Object { $_.DirectoryName -like '*NUnit.ConsoleRunner.3.6.1*' }).fullname
-    write-output "nunitPath: $nunitPath"
-}
-catch {
-    write-output "Either Nunit3-console is not there, or there are multiple instances found and it's returning an array"
-    if ($nunitPath.Length -le 0) {
-        Write-Output "Determination: the Nunit3-console is not there"
+if ($nunitPath) {
+    # Check if the provided path exists and is a file
+    if (Test-Path -Path $nunitPath -PathType Leaf) {
+        Write-Output "NUnit path supplied: $nunitPath"
     }
-    if ($nunitPath.Length -gt 1) {
-        Write-Output "Determination: there are multiple Nunit3-console instances"
+    else {
+        Write-Error "The specified nunit3-console.exe was not found at: $nunitPath"
+        exit 1
     }
-    exit $LASTEXITCODE
 }
+else {
+    Write-Output "NUnit path not supplied, searching for *NUnit.ConsoleRunner.3.6.1* in subdirectories..."
+
+    try {
+        # Search for nunit3-console.exe within directories matching *NUnit.ConsoleRunner.3.6.1*
+        $foundItems = Get-ChildItem -Path $PWD -Filter nunit3-console.exe -Recurse -ErrorAction Stop |
+        Where-Object { $_.DirectoryName -like '*NUnit.ConsoleRunner.3.6.1*' }
+
+        if ($foundItems.Count -eq 0) {
+            Write-Error "nunit3-console.exe not found in any subdirectories matching *NUnit.ConsoleRunner.3.6.1*."
+            exit 1
+        }
+        elseif ($foundItems.Count -gt 1) {
+            Write-Error "Multiple instances of nunit3-console.exe found:"
+            $foundItems | ForEach-Object { Write-Output $_.FullName }
+            exit 1
+        }
+        else {
+            $nunitPath = $foundItems[0].FullName
+            Write-Output "nunitPath found: $nunitPath"
+        }
+    }
+    catch {
+        Write-Error "An error occurred while searching for nunit3-console.exe: $_"
+        exit 1
+    }
+}
+ 
 
 
 if (-not (Test-Path -Path $startInFolder)) {
@@ -85,7 +106,8 @@ foreach ($dllFile in $allDllFiles) {
                     $filteredDllFiles += $dllFile
                     break  # Exit the inner loop once a match is found
                 }
-            } else {
+            }
+            else {
                 # For exact matches, use -eq
                 if ($dllFile.Name -eq $pattern) {
                     $filteredDllFiles += $dllFile
@@ -108,11 +130,11 @@ foreach ($dllFile in $allDllFiles) {
 
  
 
- # Get only the full paths of the filtered DLL files
-  $testFileList = $filteredDllFiles | Select-Object -ExpandProperty FullName
+# Get only the full paths of the filtered DLL files
+$testFileList = $filteredDllFiles | Select-Object -ExpandProperty FullName
 
-  write-output "TestFileList: $testFileList"
-  #null check the testFileList
+write-output "TestFileList: $testFileList"
+#null check the testFileList
 if (0 -eq $testFileList.Count) {
     Write-output "Could not find any files matching $testFileFilterPattern  . Check to make sure the base directory to make sure the test File Folder Filter is applicable."
     exit 1
@@ -128,7 +150,7 @@ foreach ($testFile in $testFileList) {
         -- $testFile --result=TestResult_$($testFile | Split-Path -Leaf).xml --where $nunitExpression
 }
 
- # Merge the coverage reports into one file (optional step)
+# Merge the coverage reports into one file (optional step)
  
 $coverageFiles = @()
 foreach ($testFile in $testFileList) {

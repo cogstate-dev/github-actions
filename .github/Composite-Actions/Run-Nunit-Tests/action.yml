@@ -1,45 +1,70 @@
-name: 'Run Unit Tests'
-description: 'Runs unit tests using NUnit.'
-author: 'Mike Burgess'
+name: "Run Unit Tests"
+description: "Runs unit tests using NUnit."
+author: "Mike Burgess"
+
 inputs:
   NUGET_SOURCE:
-    description: 'NuGet source setting.'
+    description: "NuGet source setting."
     required: true
   NUNIT_EXPRESSION:
-    description: 'nunit expression in Test Expresison Language: https://docs.nunit.org/articles/nunit/running-tests/Test-Selection-Language.html. Example: "cat == Unit||cat == Test_Unit"'
+    description: 'NUnit expression in Test Selection Language: https://docs.nunit.org/articles/nunit/running-tests/Test-Selection-Language.html. Example: "cat == Unit||cat == Test_Unit"'
+    required: true
   NUNIT_APP_CONFIG_FILE:
     description: 'File location for the app config. Example: "Cogstate.Platform/Cogstate.Tests.WebApi/App.config"'
     required: false
   NUGET_CONFIG_FULL_PATH:
-    description: 'full path to the nuget.config file. Example: "$PWD\nuget.config"'
+    description: 'Full path to the nuget.config file. Example: "$PWD\nuget.config"'
     default: '$PWD\nuget.config'
     required: false
   TEST_FILE_FILTER_PATTERN:
-    description: 'test file filter with * wildcards. Example: "Cogstate.*.Test.dll"'
-    default: 'Cogstate.*.Test.dll'
+    description: 'Test file filter with * wildcards. Example: "Cogstate.*.Test.dll"'
+    default: "Cogstate.*.Test.dll"
     required: false
   TEST_FOLDER_FILTER_PATTERN:
-    description: 'test folder filter with * wildcards. Example: "*bin"'
-    default: '*bin'
+    description: 'Test folder filter with * wildcards. Example: "*bin"'
+    default: "*bin"
     required: false
   START_IN_FOLDER:
-    description: 'directory to start in. Example "webapi" Default is current directory'
-    default: '.'
+    description: 'Directory to start in. Example "webapi". Default is current directory.'
+    default: "."
     required: false
-    
-runs:
-  using: 'composite'
-  steps:
-    - run: |
-        $startInFolder = if ("${{ inputs.START_IN_FOLDER }}" -eq ".") { Get-Location } else { "${{ inputs.START_IN_FOLDER }}" }
+  NUNIT_PATH:
+    description: "Path to nunit3-console.exe"
+    required: false
 
-        ${{ github.action_path }}/../../../Powershell/Scripts\run-nunit.ps1 `
-          -nunitExpression "${{ inputs.NUNIT_EXPRESSION }}" `
-          -nugetConfigFullPath "${{ inputs.NUGET_CONFIG_FULL_PATH }}" `
-          -nunitAppConfigFile "${{ inputs.NUNIT_APP_CONFIG_FILE }}" `
-          -testFileFilterPattern "${{ inputs.TEST_FILE_FILTER_PATTERN }}" `
-          -testFileFolderFilter "${{ inputs.TEST_FOLDER_FILTER_PATTERN }}" `
-          -nugetSource "${{ inputs.NUGET_SOURCE }}" `
-          -startInFolder $startInFolder
+runs:
+  using: "composite"
+  steps:
+    - name: Run NUnit Tests
+      run: |
+        # Determine the starting directory
+        if ("${{ inputs.START_IN_FOLDER }}" -eq ".") {
+          $startInFolder = Get-Location
+        } else {
+          $startInFolder = "${{ inputs.START_IN_FOLDER }}"
+        }
+
+        # Path to the PowerShell script
+        $scriptPath = "${{ github.action_path }}/../../../Powershell/Scripts/run-nunit.ps1"
+
+        # Initialize an array to hold script arguments
+        $args = @(
+          '-nunitExpression', "${{ inputs.NUNIT_EXPRESSION }}"
+          '-nugetConfigFullPath', "${{ inputs.NUGET_CONFIG_FULL_PATH }}"
+          '-nunitAppConfigFile', "${{ inputs.NUNIT_APP_CONFIG_FILE }}"
+          '-testFileFilterPattern', "${{ inputs.TEST_FILE_FILTER_PATTERN }}"
+          '-testFileFolderFilter', "${{ inputs.TEST_FOLDER_FILTER_PATTERN }}"
+          '-nugetSource', "${{ inputs.NUGET_SOURCE }}"
+          '-startInFolder', $startInFolder
+        )
+
+        # Conditionally add the -nunitPath parameter if NUNIT_PATH is provided
+        if ("${{ inputs.NUNIT_PATH }}" -ne "") {
+          $args += '-nunitPath'
+          $args += "${{ inputs.NUNIT_PATH }}"
+        }
+
+        # Execute the PowerShell script with the assembled arguments
+        & $scriptPath @args
       shell: |
-        pwsh -noninteractive -command "try {{ $ErrorActionPreference='Stop'; . '{0}' }} catch {{ Write-Error ""FAILED: $_""; throw; }} if ((Test-Path -LiteralPath variable:\LASTEXITCODE)) {{ exit $LASTEXITCODE }}"
+        pwsh -noninteractive -command "try { $ErrorActionPreference='Stop'; . '{0}' } catch { Write-Error 'FAILED: $_'; throw; } if ((Test-Path -LiteralPath variable:\LASTEXITCODE)) { exit $LASTEXITCODE }"
