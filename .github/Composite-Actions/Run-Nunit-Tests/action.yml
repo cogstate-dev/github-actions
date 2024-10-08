@@ -70,7 +70,7 @@ runs:
             # Debug: output the arguments being passed
             Write-Output "Executing script: $scriptPath with arguments:"
             foreach ($key in $args.Keys) {
-              Write-Output "  -$key: $($args[$key])"
+              Write-Output "  -${key}: $($args[$key])"
             }
 
             # Execute the PowerShell script with the assembled arguments
