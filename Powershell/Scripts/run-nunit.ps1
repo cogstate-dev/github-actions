@@ -26,7 +26,7 @@ param (
     [string]
     $dotCoverPath = "D:\BuildAgent\tools\JetBrains.dotCover.CommandLineTools.bundled\dotCover.exe" ,
     [Parameter(Mandatory = $false, HelpMessage = "Path to nunit3-console.exe")]
-    [sting]
+    [string]
     $nunitPath
 )
 
