@@ -52,11 +52,11 @@ else {
             Write-Error "nunit3-console.exe not found in any subdirectories matching *NUnit.ConsoleRunner.3.6.1*."
             exit 1
         }
-        elseif ($foundItems.Count -gt 1) {
-            Write-Error "Multiple instances of nunit3-console.exe found:"
-            $foundItems | ForEach-Object { Write-Output $_.FullName }
-            exit 1
-        }
+        #elseif ($foundItems.Count -gt 1) {
+        #    Write-Error "Multiple instances of nunit3-console.exe found:"
+        #    $foundItems | ForEach-Object { Write-Output $_.FullName }
+        #    exit 1
+        #}
         else {
             $nunitPath = $foundItems[0].FullName
             Write-Output "nunitPath found: $nunitPath"
