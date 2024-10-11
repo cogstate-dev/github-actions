@@ -45,7 +45,7 @@ else {
 
     try {
         # Search for nunit3-console.exe within directories matching *NUnit.ConsoleRunner.3.6.1*
-        $foundItems = Get-ChildItem -Path $PWD -Filter nunit3-console.exe -Recurse -ErrorAction Stop |
+        $foundItems = Get-ChildItem -Path $(join-path -path $pwd -ChildPath $startInFolder) -Filter nunit3-console.exe -Recurse -ErrorAction Stop |
         Where-Object { $_.DirectoryName -like '*NUnit.ConsoleRunner.3.6.1*' }
 
         if ($foundItems.Count -eq 0) {
