@@ -37,7 +37,8 @@ ${authPublishFeedPath}:always-auth=true
 ${authPublishFeedPath}:auth-type=legacy
 ${authPublishFeedPath}:_password=`"${base64Password}`"
 ${authPublishFeedPath}:username=${NPMFeedUser}
-${authPublishFeedPath}:email=${NPMFeedEmail} 
+${authPublishFeedPath}:email=${NPMFeedEmail}
+@cogstate:registry = "https://proget.cogstate.com/npm/cogstate-library-npm/" 
 "@
 
     Get-ChildItem . -Include .npmrc -Recurse | Remove-Item
