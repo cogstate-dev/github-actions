@@ -62,6 +62,10 @@ $configContent =
 
 write-output "writing block to a config path"
 # Setting nuget config with content block
+$parentDir = Split-Path -Parent $nugetConfigFullPath
+if (!(Test-Path $parentDir)) {
+    New-Item -ItemType Directory -Path $parentDir -Force | Out-Null
+}
 $configContent | Set-Content -Path $nugetConfigFullPath
 
 # Update NuGet sources
