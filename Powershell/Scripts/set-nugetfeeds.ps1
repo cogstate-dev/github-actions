@@ -20,7 +20,7 @@ param (
     $solutionFile,
     [parameter()]
     [string]
-    $nugetConfigFullPath = "$env:GITHUB_WORKSPACE\nuget.config"
+    $nugetConfigFullPath = "$env:GITHUB_WORKSPACE/nuget.config"
 )
 
 # Determine OS and set the path to nuget.exe accordingly
