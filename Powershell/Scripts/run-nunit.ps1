@@ -34,6 +34,8 @@ if ($nunitPath) {
     # Check if the provided path exists and is a file
     if (Test-Path -Path $nunitPath -PathType Leaf) {
         Write-Output "NUnit path supplied: $nunitPath"
+        $nunitPath = (Resolve-Path $nunitPath).Path
+        Write-Output "Resolved NUnit path: $nunitPath"
     }
     else {
         Write-Error "The specified nunit3-console.exe was not found at: $nunitPath"
