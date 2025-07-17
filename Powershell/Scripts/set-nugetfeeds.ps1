@@ -20,7 +20,7 @@ param (
     $solutionFile,
     [parameter()]
     [string]
-    $nugetConfigFullPath = (Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath "nuget.config")
+    $nugetConfigFullPath
 )
 
 # Determine OS and set the path to nuget.exe accordingly
@@ -61,13 +61,9 @@ $configContent =
 "@
 
 Write-Output "nugetConfigFullPath: $nugetConfigFullPath"
-Write-Output "workspace: $env:GITHUB_WORKSPACE"
+Write-Output "nugetSource: $env:GITHUB_WORKSPACE"
 write-output "writing block to a config path"
 # Setting nuget config with content block
-$parentDir = Split-Path -Parent $nugetConfigFullPath
-if (!(Test-Path $parentDir)) {
-    New-Item -ItemType Directory -Path $parentDir -Force | Out-Null
-}
 $configContent | Set-Content -Path $nugetConfigFullPath
 
 # Update NuGet sources

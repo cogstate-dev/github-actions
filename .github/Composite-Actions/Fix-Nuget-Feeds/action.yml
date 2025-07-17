@@ -16,7 +16,7 @@ inputs:
     required: true
   NUGET_CONFIG_PATH:
     description: 'optional path for the nuget.config file in the directory structure'
-    default:  "${{ github.workspace }}\nuget.config" 
+    default:  "${{ github.workspace }}/nuget.config" 
     required: false
   SOLUTION_FILE:
     description: 'Optional Solution File if you want to run a restore'
