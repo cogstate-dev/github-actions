@@ -61,6 +61,7 @@ $configContent =
 "@
 
 Write-Output "nugetConfigFullPath: $nugetConfigFullPath"
+Write-Output "workspace: $env:GITHUB_WORKSPACE"
 write-output "writing block to a config path"
 # Setting nuget config with content block
 $parentDir = Split-Path -Parent $nugetConfigFullPath
