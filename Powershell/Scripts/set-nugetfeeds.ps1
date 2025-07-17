@@ -60,6 +60,8 @@ $configContent =
 </configuration>
 "@
 
+Write-Output "nugetConfigFullPath: $nugetConfigFullPath"
+Write-Output "parentDir: $parentDir"
 write-output "writing block to a config path"
 # Setting nuget config with content block
 $parentDir = Split-Path -Parent $nugetConfigFullPath
