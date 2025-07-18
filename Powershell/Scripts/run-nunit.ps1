@@ -38,8 +38,25 @@ if ($nunitPath) {
         Write-Output "Resolved NUnit path: $nunitPath"
     }
     else {
-        Write-Error "The specified nunit3-console.exe was not found at: $nunitPath"
-        exit 1
+        Write-Host "NUnit not found at $nunitPath. Installing NUnit.ConsoleRunner via nuget..."
+        $nunitDir = Split-Path $nunitPath -Parent
+        if (!(Test-Path $nunitDir)) {
+            New-Item -ItemType Directory -Path $nunitDir -Force | Out-Null
+        }
+        # Install NUnit.ConsoleRunner using nuget.exe and custom source if provided
+        $nugetSourceArg = ""
+        if ($nugetSource) {
+            $nugetSourceArg = "-Source `"$nugetSource`""
+        }
+        & nuget install NUnit.ConsoleRunner -Version 3.18.3 $nugetSourceArg -OutputDirectory $nunitDir
+        $nunitExePath = Get-ChildItem -Path $nunitDir -Recurse -Filter nunit3-console.exe | Select-Object -First 1
+        if ($nunitExePath) {
+            $nunitPath = $nunitExePath.FullName
+            Write-Host "NUnit installed at $nunitPath"
+        } else {
+            Write-Error "Failed to install nunit3-console.exe"
+            exit 1
+        }
     }
 }
 else {
@@ -69,8 +86,6 @@ else {
         exit 1
     }
 }
- 
-
 
 if (-not (Test-Path -Path $startInFolder)) {
     Write-Error "The start directory $startInFolder does not exist."
