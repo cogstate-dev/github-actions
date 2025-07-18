@@ -46,7 +46,7 @@ if ($nunitPath) {
         # Install NUnit.ConsoleRunner using nuget.exe and custom source if provided
         $nugetSourceArg = ""
         if ($nugetSource) {
-            $nugetSourceArg = "-Source `"$nugetSource`""
+            $nugetSourceArg = "-Source $nugetSource"
         }
         & nuget install NUnit.ConsoleRunner -Version 3.18.3 $nugetSourceArg -OutputDirectory $nunitDir
         $nunitExePath = Get-ChildItem -Path $nunitDir -Recurse -Filter nunit3-console.exe | Select-Object -First 1
