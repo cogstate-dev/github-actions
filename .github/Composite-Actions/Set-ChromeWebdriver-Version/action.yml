@@ -15,6 +15,6 @@ runs:
   steps:
     - name: Set Chrome Webdriver Version
       run: |
-        ${{ github.action_path }}/../../../Powershell/Scripts/Set-Chrome-Webdriver-Version.ps1 -ProjectPath "${{ inputs.PROJECT_PATH }} -ChromePath "${{ inputs.CHROME_PATH }}"
+        ${{ github.action_path }}/../../../Powershell/Scripts/Set-Chrome-Webdriver-Version.ps1 -ProjectPath "${{ inputs.PROJECT_PATH }}" -ChromePath "${{ inputs.CHROME_PATH }}"
       shell: |
         pwsh -noninteractive -command "try {{ $ErrorActionPreference='Stop'; . '{0}' }} catch {{ Write-Error \"FAILED: $_\"; throw; }} if ((Test-Path -LiteralPath variable:\LASTEXITCODE)) {{ exit $LASTEXITCODE }}"
