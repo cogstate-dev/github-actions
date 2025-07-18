@@ -31,5 +31,5 @@ if ($csprojFiles.Count -eq 0) {
 
 foreach ($proj in $csprojFiles) {
     Write-Host "Updating Selenium.WebDriver.ChromeDriver in $($proj.FullName) to version $majorVersion.0.0"
-    Invoke-Expression "$nugetExe update $proj.FullName -Id Selenium.WebDriver.ChromeDriver -Version $majorVersion.0.0"
+    dotnet add $proj.FullName -Id Selenium.WebDriver.ChromeDriver -Version "$majorVersion.0.0"
 }
