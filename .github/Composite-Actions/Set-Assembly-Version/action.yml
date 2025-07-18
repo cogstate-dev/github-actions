@@ -1,0 +1,18 @@
+name: 'Set Assembly Version'
+description: 'Sets the assembly version for a .NET project using a composite action.'
+author: 'Connor Brunjes'
+inputs:
+  ASSEMBLY_VERSION:
+    description: 'The assembly version to set. Example: "1.0.0"'
+    required: true
+  ASSEMBLY_FILE:
+    description: 'The path to the assembly file. Example: "src/MyProject/Properties/AssemblyInfo.cs"'
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Set Assembly Version
+      run: |
+        ${{ github.action_path }}/../../../Powershell/Scripts/Set-Assembly-Version.ps1 -AssemblyVersionInput "${{ inputs.ASSEMBLY_VERSION }}" -AssemblyFile "${{ inputs.ASSEMBLY_FILE }}"
+      shell: |
+        pwsh -noninteractive -command "try {{ $ErrorActionPreference='Stop'; . '{0}' }} catch {{ Write-Error \"FAILED: $_\"; throw; }} if ((Test-Path -LiteralPath variable:\LASTEXITCODE)) {{ exit $LASTEXITCODE }}"

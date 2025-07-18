@@ -1,0 +1,20 @@
+name: 'Set Chrome Webdriver Version'
+description: 'Updates the version of Chrome Webdriver based on the installed Chrome version.'
+author: 'Connor Brunjes'
+inputs:
+  PROJECT_PATH:
+    description: 'Path to the project file or directory containing the project. Example: "src/MyProject"'
+    required: false
+    default: '.'
+  CHROME_PATH:
+    description: 'Path to the Chrome executable. Example: "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"'
+    required: false
+    default: 'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe'
+runs:
+  using: composite
+  steps:
+    - name: Set Chrome Webdriver Version
+      run: |
+        ${{ github.action_path }}/../../../Powershell/Scripts/Set-Chrome-Webdriver-Version.ps1 -ProjectPath "${{ inputs.PROJECT_PATH }} -ChromePath "${{ inputs.CHROME_PATH }}"
+      shell: |
+        pwsh -noninteractive -command "try {{ $ErrorActionPreference='Stop'; . '{0}' }} catch {{ Write-Error \"FAILED: $_\"; throw; }} if ((Test-Path -LiteralPath variable:\LASTEXITCODE)) {{ exit $LASTEXITCODE }}"
