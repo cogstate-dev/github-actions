@@ -48,7 +48,7 @@ if ($nunitPath) {
         if ($nugetSource) {
             $nugetSourceArg = "-Source $nugetSource"
         }
-        & nuget install NUnit.ConsoleRunner -Version 3.18.3 $nugetSourceArg -OutputDirectory $nunitDir
+        Invoke-Expression "nuget install NUnit.ConsoleRunner -Version 3.18.3 $nugetSourceArg -OutputDirectory $nunitDir"
         $nunitExePath = Get-ChildItem -Path $nunitDir -Recurse -Filter nunit3-console.exe | Select-Object -First 1
         if ($nunitExePath) {
             $nunitPath = $nunitExePath.FullName
