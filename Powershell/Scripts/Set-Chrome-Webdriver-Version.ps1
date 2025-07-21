@@ -41,4 +41,7 @@ Write-Host "Restoring packages for all projects..."
 $nugetConfigPath = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath "nuget.config"
 Write-Host "Using NuGet config: $nugetConfigPath"
 
-& $nugetExe restore "$ProjectPath\$SolutionFile" -force -recursive -ConfigFile "$nugetConfigPath" -Verbosity detailed
+& dotnet restore "$ProjectPath\$SolutionFile" `
+    --configfile "$nugetConfigPath" `
+    --verbosity detailed `
+    -warnaserror false
