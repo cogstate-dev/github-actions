@@ -35,3 +35,10 @@ foreach ($proj in $csprojFiles) {
     # If you want to use nuget.exe instead, uncomment the line below
     # Invoke-Expression "$nugetExe update $proj.FullName -Id Selenium.WebDriver.ChromeDriver -Version $majorVersion.0.0"
 }
+
+Write-Host "Restoring packages for all projects..."
+$restoreResult = dotnet restore $ProjectPath --configfile "$env:GITHUB_WORKSPACE\nuget.config"
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "dotnet restore failed"
+    exit $LASTEXITCODE
+}
