@@ -10,6 +10,10 @@ inputs:
     description: 'Path to the Chrome executable. Example: "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"'
     required: false
     default: 'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe'
+  SOLUTION_FILE:
+    description: 'Name of the solution file to restore packages for. Example: "Cogstate.Platform.sln"'
+    required: false
+    default: 'Cogstate.Platform.sln'
 runs:
   using: composite
   steps:
