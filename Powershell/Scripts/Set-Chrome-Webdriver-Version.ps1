@@ -40,9 +40,7 @@ foreach ($proj in $csprojFiles) {
 Write-Host "Restoring packages for all projects..."
 $nugetConfigPath = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath "nuget.config"
 Write-Host "Using NuGet config: $nugetConfigPath"
-Write-Host "Restoring: Path='$ProjectPath', SolutionFile='$SolutionFile'"
+Write-Host "Restoring: $solutionPath"
+$solutionPath = Join-Path -Path $ProjectPath -ChildPath $SolutionFile
 
-& dotnet restore "$ProjectPath\$SolutionFile" `
-    --configfile "$nugetConfigPath" `
-    --verbosity detailed `
-    --warnaserror false
+& dotnet restore "$solutionPath" --configfile "$nugetConfigPath" --verbosity detailed --warnaserror false
