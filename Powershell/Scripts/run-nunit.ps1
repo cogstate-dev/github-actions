@@ -178,10 +178,10 @@ foreach ($testFile in $testFileList) {
     $coverageFiles += $coverageFile
 }
 
+$mergeArgs = @("--output=MergedCoverageReport.dcvr", "--reportType=DetailedXML")
 
-$coverageFileList = $coverageFiles -join ' '
+foreach ($file in $coverageFiles) {
+    $mergeArgs += "--source=$file"
+}
 
-& $dotCoverPath merge `
-    --source $coverageFileList `
-    --output="MergedCoverageReport.dcvr" `
-    --reportType="DetailedXML"
+& $dotCoverPath merge @mergeArgs
