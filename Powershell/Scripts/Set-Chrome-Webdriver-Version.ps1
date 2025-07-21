@@ -47,4 +47,4 @@ if (!(Test-Path $solutionPath)) {
     exit 1
 }   
 
-& dotnet restore "$solutionPath" --configfile "$nugetConfigPath" --verbosity detailed --warnaserror false
+& dotnet restore $solutionPath --configfile "$nugetConfigPath" --verbosity detailed --warnaserror false
