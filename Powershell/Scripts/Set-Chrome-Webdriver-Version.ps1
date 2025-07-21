@@ -37,7 +37,10 @@ foreach ($proj in $csprojFiles) {
 }
 
 Write-Host "Restoring packages for all projects..."
-$restoreResult = dotnet restore $ProjectPath --configfile "$env:GITHUB_WORKSPACE\nuget.config"
+$nugetConfigPath = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath "nuget.config"
+Write-Host "Using NuGet config: $nugetConfigPath"
+
+$restoreResult = dotnet restore $ProjectPath --configfile "$nugetConfigPath"
 if ($LASTEXITCODE -ne 0) {
     Write-Error "dotnet restore failed"
     exit $LASTEXITCODE
