@@ -45,4 +45,4 @@ Write-Host "Restoring: Path='$ProjectPath', SolutionFile='$SolutionFile'"
 & dotnet restore "$ProjectPath\$SolutionFile" `
     --configfile "$nugetConfigPath" `
     --verbosity detailed `
-    -warnaserror false
+    --warnaserror false
