@@ -1,0 +1,25 @@
+name: Set Client Version
+description: Selects version of client based on api version
+author: Connor Brunjes
+inputs:
+  BRANCH_NAME:
+    description: 'Name of the branch to use for the client version. Example: "main"'
+    required: true
+    default: 'main'
+  SPECIFIED_VERSION:
+    description: 'Specific version to use for the client. Example: "1.2.3"'
+    required: false
+    default: ''
+outputs:
+  client-version: 
+    description: 'The version of the client that was selected.'
+    value: ${{ steps.set-client-version.outputs.client-version }}
+runs:
+  using: composite
+  steps:
+    - id: set-client-version
+      name: Set Client Version
+      run: |
+        {{ github.action_path }}/../../../Bash/Scripts/Set-Client-Version.sh "${{ inputs.BRANCH_NAME }}"
+      shell: bash
+

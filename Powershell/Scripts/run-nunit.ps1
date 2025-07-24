@@ -179,10 +179,15 @@ foreach ($testFile in $testFileList) {
 }
 
 $coverageFiles = $coverageFiles | select-Object -Unique
-$mergeArgs = @("--output=MergedCoverageReport.dcvr", "--reportType=DetailedXML")
+$mergeArgs = @("--output=MergedCoverageReport.dcvr")
 
 foreach ($file in $coverageFiles) {
     $mergeArgs += "--source=$file"
 }
 
 & $dotCoverPath merge @mergeArgs
+
+& $dotCoverPath report `
+    --source="MergedCoverageReport.dcvr" `
+    --output="FinalCoverageReport.xml" `
+    --reportType="DetailedXML"
