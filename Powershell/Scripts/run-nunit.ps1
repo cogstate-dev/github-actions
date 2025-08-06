@@ -158,36 +158,53 @@ if (0 -eq $testFileList.Count) {
 }
    
 # Loop through each test DLL and run dotCover for each one separately
-foreach ($testFile in $testFileList) {
-    & $dotCoverPath cover `
-        --targetExecutable="$nunitPath" `
-        --output="dotCoverReport_$($testFile | Split-Path -Leaf).dcvr" `
-        --reportType="DetailedXML" `
-        --returnTargetExitCode `
-        -- $testFile --result=TestResult_$($testFile | Split-Path -Leaf).xml --where $nunitExpression
-}
+# foreach ($testFile in $testFileList) {
+#     & $dotCoverPath cover `
+#         --targetExecutable="$nunitPath" `
+#         --output="dotCoverReport_$($testFile | Split-Path -Leaf).dcvr" `
+#         --reportType="DetailedXML" `
+#         --returnTargetExitCode `
+#         -- $testFile --result=TestResult_$($testFile | Split-Path -Leaf).xml --where $nunitExpression
+# }
+
+# Run all tests and generate coverage reports
+& $dotCoverPath cover `
+    --targetExecutable="$nunitPath" `
+    --output="Coverage.dcvr" `
+    --reportType="DetailedXML" `
+    --returnTargetExitCode `
+    -- @testFileList --result="TestResult.xml" --where $nunitExpression
+
+# Generate the final XML coverage report
+& $dotCoverPath report `
+    --source="Coverage.dcvr" `
+    --output="FinalCoverageReport.xml" `
+    --reportType="DetailedXML"
+
+# Annotate the report to GitHub Actions
+
 
 # Merge the coverage reports into one file (optional step)
  
-$coverageFiles = @()
-foreach ($testFile in $testFileList) {
-    # Generate the corresponding coverage report file name based on the test DLL
-    $coverageFile = "dotCoverReport_$($testFile | Split-Path -Leaf).dcvr"
+# $coverageFiles = @()
+# foreach ($testFile in $testFileList) {
+#     # Generate the corresponding coverage report file name based on the test DLL
+#     $coverageFile = "dotCoverReport_$($testFile | Split-Path -Leaf).dcvr"
     
-    # Add the coverage file name to the $coverageFiles list
-    $coverageFiles += $coverageFile
-}
+#     # Add the coverage file name to the $coverageFiles list
+#     $coverageFiles += $coverageFile
+# }
 
-$coverageFiles = $coverageFiles | select-Object -Unique
-$mergeArgs = @("--output=MergedCoverageReport.dcvr")
+# $coverageFiles = $coverageFiles | select-Object -Unique
+# $mergeArgs = @("--output=MergedCoverageReport.dcvr")
 
-foreach ($file in $coverageFiles) {
-    $mergeArgs += "--source=$file"
-}
+# foreach ($file in $coverageFiles) {
+#     $mergeArgs += "--source=$file"
+# }
 
-& $dotCoverPath merge @mergeArgs
+# & $dotCoverPath merge @mergeArgs
 
-& $dotCoverPath report `
-    --source="MergedCoverageReport.dcvr" `
-    --output="FinalCoverageReport.xml" `
-    --reportType="DetailedXML"
+# & $dotCoverPath report `
+#     --source="MergedCoverageReport.dcvr" `
+#     --output="FinalCoverageReport.xml" `
+#     --reportType="DetailedXML"
