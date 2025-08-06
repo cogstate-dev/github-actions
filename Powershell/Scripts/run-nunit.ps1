@@ -176,10 +176,10 @@ if (0 -eq $testFileList.Count) {
     -- @testFileList --result="TestResult.xml" --where $nunitExpression
 
 # Generate the final XML coverage report
-& $dotCoverPath report `
-    --source="Coverage.dcvr" `
-    --output="FinalCoverageReport.xml" `
-    --reportType="DetailedXML"
+# & $dotCoverPath report `
+#     --source="Coverage.dcvr" `
+#     --output="FinalCoverageReport.xml" `
+#     --reportType="DetailedXML"
 
 # Annotate the report to GitHub Actions
 
