@@ -156,16 +156,6 @@ if (0 -eq $testFileList.Count) {
     Write-output "Could not find any files matching $testFileFilterPattern  . Check to make sure the base directory to make sure the test File Folder Filter is applicable."
     exit 1
 }
-   
-# Loop through each test DLL and run dotCover for each one separately
-# foreach ($testFile in $testFileList) {
-#     & $dotCoverPath cover `
-#         --targetExecutable="$nunitPath" `
-#         --output="dotCoverReport_$($testFile | Split-Path -Leaf).dcvr" `
-#         --reportType="DetailedXML" `
-#         --returnTargetExitCode `
-#         -- $testFile --result=TestResult_$($testFile | Split-Path -Leaf).xml --where $nunitExpression
-# }
 
 # Run all tests and generate coverage reports
 & $dotCoverPath cover `
@@ -175,36 +165,64 @@ if (0 -eq $testFileList.Count) {
     --returnTargetExitCode `
     -- @testFileList --result="TestResult.xml" --where $nunitExpression
 
-# Generate the final XML coverage report
-# & $dotCoverPath report `
-#     --source="Coverage.dcvr" `
-#     --output="FinalCoverageReport.xml" `
-#     --reportType="DetailedXML"
 
-# Annotate the report to GitHub Actions
+if (-not (Test-Path "Coverage.dcvr")) {
+    Write-Error "Failed to generate coverage report."
+    exit 1
+}
 
+# Attach the test results to the build
+Write-Host "Coverage report generated successfully."
 
-# Merge the coverage reports into one file (optional step)
- 
-# $coverageFiles = @()
-# foreach ($testFile in $testFileList) {
-#     # Generate the corresponding coverage report file name based on the test DLL
-#     $coverageFile = "dotCoverReport_$($testFile | Split-Path -Leaf).dcvr"
-    
-#     # Add the coverage file name to the $coverageFiles list
-#     $coverageFiles += $coverageFile
-# }
+& $dotCoverPath report `
+    --Source="Coverage.dcvr" `
+    --ReportType="HTML" `
+    --Output="CoverageReport.html"
 
-# $coverageFiles = $coverageFiles | select-Object -Unique
-# $mergeArgs = @("--output=MergedCoverageReport.dcvr")
+& $dotCoverPath report `
+    --Source="Coverage.dcvr" `
+    --ReportType="XML" `
+    --Output="CoverageReport.xml"
 
-# foreach ($file in $coverageFiles) {
-#     $mergeArgs += "--source=$file"
-# }
+[xml]$coverageXml = Get-Content "CoverageReport.xml"
+$stats = $coverageXml.Report.Statistics
 
-# & $dotCoverPath merge @mergeArgs
+$coverageSummary = @{
+    Statements = $stats.CoveragePercent
+}
 
-# & $dotCoverPath report `
-#     --source="MergedCoverageReport.dcvr" `
-#     --output="FinalCoverageReport.xml" `
-#     --reportType="DetailedXML"
+[xml]$testResults = Get-Content "TestResult.xml"
+
+$totalTests   = $testResults.'test-run'.total
+$passedTests  = $testResults.'test-run'.passed
+$failedTests  = $testResults.'test-run'.failed
+$skippedTests = $testResults.'test-run'.skipped
+
+# Get failed test names
+$failedTestNames = $testResults.'test-run'.'test-suite'.'test-case' |
+    Where-Object { $_.result -eq "Failed" } |
+    Select-Object -ExpandProperty fullname
+
+$summaryFile = $env:GITHUB_STEP_SUMMARY
+
+@"
+# ✅ Test & Coverage Summary
+
+## 📊 Coverage
+Total: $($coverageSummary.Statements)%
+
+## 🧪 Tests
+| Total | Passed | Failed | Skipped |
+|-------|--------|--------|---------|
+| $totalTests | $passedTests | $failedTests | $skippedTests |
+
+"@ | Out-File -FilePath $summaryFile -Encoding utf8 -Append
+
+if ($failedTests -gt 0) {
+    Add-Content $summaryFile "### ❌ Failed Tests"
+    foreach ($test in $failedTestNames) {
+        Add-Content $summaryFile "- $test"
+    }
+}
+
+Write-Host "Summary written to GitHub job summary."
