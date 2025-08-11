@@ -153,21 +153,30 @@ $testFileList = $filteredDllFiles | Select-Object -ExpandProperty FullName
 write-output "TestFileList: $testFileList"
 #null check the testFileList
 if (0 -eq $testFileList.Count) {
-    Write-output "Could not find any files matching $testFileFilterPattern  . Check to make sure the base directory to make sure the test File Folder Filter is applicable."
+    Write-output "Could not find any files matching $testFileFilterPattern. Check to make sure the base directory to make sure the test File Folder Filter is applicable."
     exit 1
 }
+
+# Use abosolute paths for coverage file
+$coverageFile = Join-Path -Path $pwd "Coverage.dcvr"
+$coverageXmlPath = Join-Path -Path $pwd "CoverageReport.xml"
+$coverageHtml = Join-Path $pwd "CoverageReport.html"
+$testResultFile = Join-Path $pwd "TestResult.xml"
+
+Write-Host "coverage file path: $coverageFile"
+Write-Host "coverage xml path: $coverageXmlPath"
 
 # Run all tests and generate coverage reports
 & $dotCoverPath cover `
     --targetExecutable="$nunitPath" `
-    --output="Coverage.dcvr" `
+    --output="$coverageFile" `
     --reportType="DetailedXML" `
     --returnTargetExitCode `
     -- @testFileList --result="TestResult.xml" --where $nunitExpression
 
 
-if (-not (Test-Path "Coverage.dcvr")) {
-    Write-Error "Failed to generate coverage report."
+if (-not (Test-Path "$coverageFile")) {
+    Write-Error "Failed to generate coverage report at $coverageFile"
     exit 1
 }
 
@@ -175,23 +184,23 @@ if (-not (Test-Path "Coverage.dcvr")) {
 Write-Host "Coverage report generated successfully."
 
 & $dotCoverPath report `
-    --Source="Coverage.dcvr" `
+    --Source="$coverageFile" `
     --ReportType="HTML" `
-    --Output="CoverageReport.html"
+    --Output="$coverageHtml"
 
 & $dotCoverPath report `
-    --Source="Coverage.dcvr" `
+    --Source="$coverageFile" `
     --ReportType="XML" `
-    --Output="CoverageReport.xml"
+    --Output="$coverageXmlPath"
 
-[xml]$coverageXml = Get-Content "CoverageReport.xml"
+[xml]$coverageXml = Get-Content "$coverageXmlPath"
 $stats = $coverageXml.Report.Statistics
 
 $coverageSummary = @{
     Statements = $stats.CoveragePercent
 }
 
-[xml]$testResults = Get-Content "TestResult.xml"
+[xml]$testResults = Get-Content "$testResultFile"
 
 $totalTests   = $testResults.'test-run'.total
 $passedTests  = $testResults.'test-run'.passed
