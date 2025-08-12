@@ -170,7 +170,6 @@ Write-Host "coverage xml path: $coverageXmlPath"
 & $dotCoverPath cover `
     --targetExecutable="$nunitPath" `
     --output="$coverageFile" `
-    --reportType="DetailedXML" `
     --returnTargetExitCode `
     -- @testFileList --result="TestResult.xml" --where $nunitExpression
 
