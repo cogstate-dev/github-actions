@@ -193,11 +193,16 @@ Write-Host "Coverage report generated successfully."
     --Output="$coverageXmlPath"
 
 [xml]$coverageXml = Get-Content "$coverageXmlPath"
-$stats = $coverageXml.Report.Statistics
-
-$coverageSummary = @{
-    Statements = $stats.CoveragePercent
+$projectCoverage = $coverageXml.SelectNodes("//Project") | ForEach-Object {
+    @{
+        Name = $_.Name
+        CoveragePercent = [decimal]$_.CoveragePercent
+    }
 }
+
+$coverageTable = "| Project Name | Coverage Percent |
+|---------------|-----------------|
+" + ($projectCoverage | ForEach-Object { "| $($_.Name) | $($_.CoveragePercent)% |" }) -join "`n"
 
 [xml]$testResults = Get-Content "$testResultFile"
 
@@ -206,31 +211,18 @@ $passedTests  = $testResults.'test-run'.passed
 $failedTests  = $testResults.'test-run'.failed
 $skippedTests = $testResults.'test-run'.skipped
 
-# Get failed test names
-$failedTestNames = $testResults.'test-run'.'test-suite'.'test-case' |
-    Where-Object { $_.result -eq "Failed" } |
-    Select-Object -ExpandProperty fullname
+$summary = @"
+### ✅ Test & Coverage Summary
 
-$summaryFile = $env:GITHUB_STEP_SUMMARY
+#### 📊 Coverage
+$coverageTable
 
-@"
-# ✅ Test & Coverage Summary
-
-## 📊 Coverage
-Total: $($coverageSummary.Statements)%
-
-## 🧪 Tests
+#### 🧪 Tests
 | Total | Passed | Failed | Skipped |
 |-------|--------|--------|---------|
 | $totalTests | $passedTests | $failedTests | $skippedTests |
 
-"@ | Out-File -FilePath $summaryFile -Encoding utf8 -Append
+"@
 
-if ($failedTests -gt 0) {
-    Add-Content $summaryFile "### ❌ Failed Tests"
-    foreach ($test in $failedTestNames) {
-        Add-Content $summaryFile "- $test"
-    }
-}
-
+Set-Content -Path $env:GITHUB_STEP_SUMMARY -Value $summary
 Write-Host "Summary written to GitHub job summary."
