@@ -171,7 +171,7 @@ Write-Host "coverage xml path: $coverageXmlPath"
     --targetExecutable="$nunitPath" `
     --output="$coverageFile" `
     --returnTargetExitCode `
-    -- @testFileList --result="TestResult.xml" --where $nunitExpression
+    -- @testFileList --result="$testResultFile" --where $nunitExpression
 
 
 if (-not (Test-Path "$coverageFile")) {
