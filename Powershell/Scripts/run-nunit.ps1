@@ -71,11 +71,6 @@ else {
             Write-Error "nunit3-console.exe not found in any subdirectories matching *NUnit.ConsoleRunner.3.6.1*."
             exit 1
         }
-        #elseif ($foundItems.Count -gt 1) {
-        #    Write-Error "Multiple instances of nunit3-console.exe found:"
-        #    $foundItems | ForEach-Object { Write-Output $_.FullName }
-        #    exit 1
-        #}
         else {
             $nunitPath = $foundItems[0].FullName
             Write-Output "nunitPath found: $nunitPath"
@@ -134,30 +129,17 @@ foreach ($dllFile in $allDllFiles) {
         }
     }
 }
- 
-#call nunit3-console
-#if (-not $nunitAppConfigFile -or $nunitAppConfigFile -eq ""){
-#    Write-Output "$nunitPath $testFileString --where `"$nunitExpression`" --skipnontestassemblies --config $nunitAppConfigFile"
-#    Invoke-Expression "$nunitPath $testFileString --where `"$nunitExpression`" --skipnontestassemblies --config $nunitAppConfigFile"
-#}
-#else {
-#    Write-Output "$nunitPath $testFileString --where `"$nunitExpression`" --skipnontestassemblies "
-#    Invoke-Expression "$nunitPath $testFileString --where `"$nunitExpression`" --skipnontestassemblies"
-#}
-
- 
 
 # Get only the full paths of the filtered DLL files
 $testFileList = $filteredDllFiles | Select-Object -ExpandProperty FullName
 
 write-output "TestFileList: $testFileList"
-#null check the testFileList
 if (0 -eq $testFileList.Count) {
-    Write-output "Could not find any files matching $testFileFilterPattern. Check to make sure the base directory to make sure the test File Folder Filter is applicable."
+    Write-output "Could not find any files matching $testFileFilterPattern."
     exit 1
 }
 
-# Use abosolute paths for coverage file
+# Use abosolute paths for coverage artifacts otherwise dotcover stores in temp
 $coverageFile = Join-Path -Path $pwd "Coverage.dcvr"
 $coverageXmlPath = Join-Path -Path $pwd "CoverageReport.xml"
 $coverageHtml = Join-Path $pwd "CoverageReport.html"
