@@ -86,3 +86,19 @@ runs:
       with:
         name: coverage-report
         path: ${{ inputs.START_IN_FOLDER }}\CoverageReport.html
+        overwrite: true
+        retention-days: 1
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results-xml
+        path: ${{ inputs.START_IN_FOLDER }}\CoverageReport.xml
+        overwrite: true
+        retention-days: 1
+    - name: Upload NUnit test results
+      uses: actions/upload-artifact@v4
+      with:
+        name: nunit-test-results
+        path: ${{ inputs.START_IN_FOLDER }}\TestResult.xml
+        overwrite: true
+        retention-days: 1
