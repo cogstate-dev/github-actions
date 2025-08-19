@@ -182,9 +182,16 @@ $projectCoverage = $coverageXml.SelectNodes("//Assembly") | ForEach-Object {
     }
 }
 
-$coverageTable = "| Project Name | Coverage Percent |
-|---------------|-----------------|
-" + ($projectCoverage | ForEach-Object { "| $($_.Name) | $($_.CoveragePercent)% |" }) -join "`n"
+$rows = $assemblyCoverage | ForEach-Object {
+    "| $($_.Name) | $($_.CoveragePercent)% |"
+}
+
+$coverageTable = @"
+📊 Coverage
+| Assembly Name | Coverage Percent |
+|---------------|------------------|
+$($rows -join "`n")
+"@
 
 [xml]$testResults = Get-Content "$testResultFile"
 
