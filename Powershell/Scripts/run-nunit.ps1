@@ -187,7 +187,6 @@ $rows = $assemblyCoverage | ForEach-Object {
 }
 
 $coverageTable = @"
-📊 Coverage
 | Assembly Name | Coverage Percent |
 |---------------|------------------|
 $($rows -join "`n")
