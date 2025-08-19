@@ -199,6 +199,11 @@ $passedTests  = $testResults.'test-run'.passed
 $failedTests  = $testResults.'test-run'.failed
 $skippedTests = $testResults.'test-run'.skipped
 
+if ($failedTests -gt 0) {
+    Write-Error "❌ $failedTests test(s) failed. Failing the pipeline."
+    exit 1
+}
+
 $summary = @"
 ### ✅ Test & Coverage Summary
 
@@ -209,7 +214,6 @@ $coverageTable
 | Total | Passed | Failed | Skipped |
 |-------|--------|--------|---------|
 | $totalTests | $passedTests | $failedTests | $skippedTests |
-
 "@
 
 Set-Content -Path $env:GITHUB_STEP_SUMMARY -Value $summary
