@@ -175,7 +175,7 @@ Write-Host "Coverage report generated successfully."
     --Output="$coverageXmlPath"
 
 [xml]$coverageXml = Get-Content "$coverageXmlPath"
-$projectCoverage = $coverageXml.SelectNodes("//Assembly") | ForEach-Object {
+$assemblyCoverage = $coverageXml.SelectNodes("//Assembly") | ForEach-Object {
     @{
         Name = $_.Name
         CoveragePercent = [decimal]$_.CoveragePercent
