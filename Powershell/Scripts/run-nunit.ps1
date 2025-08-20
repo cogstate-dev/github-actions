@@ -164,10 +164,11 @@ if (-not (Test-Path "$coverageFile")) {
 # Attach the test results to the build
 Write-Host "Coverage report generated successfully."
 
-& $dotCoverPath report `
-    --Source="$coverageFile" `
-    --ReportType="HTML" `
-    --Output="$coverageHtml"
+# TODO: Fix the html report dotCover version not supporting currently
+# & $dotCoverPath report `
+#     --Source="$coverageFile" `
+#     --ReportType="HTML" `
+#     --Output="$coverageHtml"
 
 & $dotCoverPath report `
     --Source="$coverageFile" `
@@ -194,13 +195,35 @@ $($rows -join "`n")
 
 [xml]$testResults = Get-Content "$testResultFile"
 
-$totalTests   = $testResults.'test-run'.total
-$passedTests  = $testResults.'test-run'.passed
-$failedTests  = $testResults.'test-run'.failed
+$totalTests = $testResults.'test-run'.total
+$passedTests = $testResults.'test-run'.passed
+$failedTests = $testResults.'test-run'.failed
 $skippedTests = $testResults.'test-run'.skipped
 
 if ($failedTests -gt 0) {
-    Write-Error "❌ $failedTests test(s) failed. Failing the pipeline."
+    Write-Host "❌ $failedTests test(s) failed."
+    $failedNodes = $testResults.SelectNodes("(//test-case[@result='Failed'])[position() <= 10]")
+    $failedList = $failedNodes | Select-Object -First 10 -ExpandProperty fullname | ForEach-Object {
+        "- $_"
+    }
+
+# Do not indent this, breaks the string
+$failureSummary = @"
+### ❌ Test & Coverage Summary
+#### Tests
+|Total | Passed | Failed | Skipped |
+|-------|--------|--------|---------|
+| $totalTests | $passedTests | $failedTests | $skippedTests |
+
+#### Failed Tests ❌
+$($failedList -join "`n")
+"@
+
+    if ($failedTests -gt 10) {
+        $failureSummary += "`n*...and $($failedTests - 10) more failures.*"
+    }
+
+    Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value $failureSummary
     exit 1
 }
 
@@ -216,5 +239,5 @@ $coverageTable
 | $totalTests | $passedTests | $failedTests | $skippedTests |
 "@
 
-Set-Content -Path $env:GITHUB_STEP_SUMMARY -Value $summary
+Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value $summary
 Write-Host "Summary written to GitHub job summary."
