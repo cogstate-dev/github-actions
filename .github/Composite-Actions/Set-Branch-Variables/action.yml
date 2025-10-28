@@ -50,7 +50,7 @@ runs:
       id: branch-regex
       with:
         text: ${{ inputs.BRANCH_NAME }}
-        regex: '(?:.+?)?(?:(?:feature|release)\/(\d+\.\d+\.\d+))\/?([?a-zA-Z]+-\d+)?$'
+        regex: '^(?:.*\/)?(?:feature|release)\/(\d+\.\d+\.\d+)(?:\/([a-z0-9][a-z0-9._-]*))?$'
 
     #Set the Dev variables if the branch contains feature
 
