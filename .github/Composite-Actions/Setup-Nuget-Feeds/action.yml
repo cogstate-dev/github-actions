@@ -1,0 +1,69 @@
+name: 'Setup NuGet Feeds'
+description: >
+  Remove any nuget.config files committed in the repo and write a single nuget.config
+  pointing at the ProGet feeds, with credentials. Linux/bash replacement for
+  Fix-Nuget-Feeds; uses the dotnet CLI only (no nuget.exe required).
+inputs:
+  NUGET_SOURCE:
+    description: 'NuGet download feed'
+    required: true
+  NUGET_PUBLISH:
+    description: 'NuGet deployable publish feed'
+    required: true
+  NUGET_LIBRARY:
+    description: 'NuGet library publish feed'
+    required: true
+  PROGET_API_KEY:
+    description: 'ProGet API key (used as the feed password)'
+    required: true
+  FEED_USER:
+    description: 'Username for the ProGet feeds'
+    required: false
+    default: 'api'
+  NUGET_CONFIG_PATH:
+    description: 'Where to write the nuget.config'
+    required: false
+    default: '${{ github.workspace }}/nuget.config'
+
+runs:
+  using: 'composite'
+  steps:
+    - shell: bash
+      env:
+        NUGET_SOURCE: ${{ inputs.NUGET_SOURCE }}
+        NUGET_PUBLISH: ${{ inputs.NUGET_PUBLISH }}
+        NUGET_LIBRARY: ${{ inputs.NUGET_LIBRARY }}
+        PROGET_API_KEY: ${{ inputs.PROGET_API_KEY }}
+        FEED_USER: ${{ inputs.FEED_USER }}
+        NUGET_CONFIG_PATH: ${{ inputs.NUGET_CONFIG_PATH }}
+      run: |
+        set -euo pipefail
+
+        echo "Removing nuget.config files committed in the repo"
+        find "$GITHUB_WORKSPACE" -iname 'nuget.config' -type f -not -path "$NUGET_CONFIG_PATH" -delete
+
+        echo "Writing $NUGET_CONFIG_PATH"
+        cat > "$NUGET_CONFIG_PATH" <<EOF
+        <?xml version="1.0" encoding="utf-8"?>
+        <configuration>
+          <packageSources>
+            <clear />
+            <add key="proget" value="$NUGET_SOURCE" />
+            <add key="proget-deployable" value="$NUGET_PUBLISH" />
+            <add key="proget-lib" value="$NUGET_LIBRARY" />
+          </packageSources>
+          <disabledPackageSources>
+            <clear />
+          </disabledPackageSources>
+        </configuration>
+        EOF
+
+        for source in proget proget-deployable proget-lib; do
+          dotnet nuget update source "$source" \
+            --configfile "$NUGET_CONFIG_PATH" \
+            --username "$FEED_USER" \
+            --password "$PROGET_API_KEY" \
+            --store-password-in-clear-text
+        done
+
+        dotnet nuget list source --configfile "$NUGET_CONFIG_PATH"

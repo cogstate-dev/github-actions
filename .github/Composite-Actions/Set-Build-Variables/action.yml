@@ -1,0 +1,117 @@
+name: 'Set Build Variables'
+description: >
+  Derive the version, build type, build config and NuGet feeds from the branch name.
+  Linux/bash replacement for Set-Branch-Variables. Branches containing "feature/" get
+  dev feeds and a -dev prerelease version; everything else (develop, main, release/*)
+  gets the release-candidate feeds and a -rc prerelease version.
+inputs:
+  BRANCH_NAME:
+    description: 'The branch being built, e.g. develop, feature/1.2.3/ABC-123, release/1.2.3'
+    required: true
+  DEFAULT_VERSION:
+    description: 'Base version (x.y.z) used when the branch name does not contain one (e.g. develop)'
+    required: false
+    default: '0.1.0'
+  NUGET_SOURCE:
+    description: 'NuGet download feed for default/release branches'
+    required: false
+    default: 'https://proget.cogstate.com/nuget/nuget-approved/'
+  NUGET_SOURCE_DEV:
+    description: 'NuGet download feed for feature branches'
+    required: false
+    default: 'https://proget.cogstate.com/nuget/nuget-dev/'
+  NUGET_PUBLISH:
+    description: 'NuGet deployable publish feed for default/release branches'
+    required: false
+    default: 'https://proget.cogstate.com/nuget/cogstate-releases-candidate/'
+  NUGET_PUBLISH_DEV:
+    description: 'NuGet deployable publish feed for feature branches'
+    required: false
+    default: 'https://proget.cogstate.com/nuget/cogstate-releases-dev/'
+  NUGET_LIBRARY:
+    description: 'NuGet library publish feed for default/release branches'
+    required: false
+    default: 'https://proget.cogstate.com/nuget/cogstate-library-nuget/'
+  NUGET_LIBRARY_DEV:
+    description: 'NuGet library publish feed for feature branches'
+    required: false
+    default: 'https://proget.cogstate.com/nuget/cogstate-library-nuget-dev/'
+outputs:
+  version:
+    description: 'Full semver2 version, e.g. 1.2.3-dev.abc-123.41 or 1.2.3-rc.41'
+    value: ${{ steps.set-vars.outputs.version }}
+  build-type:
+    description: 'dev or rc'
+    value: ${{ steps.set-vars.outputs.build-type }}
+  build-config:
+    description: 'Debug or Release'
+    value: ${{ steps.set-vars.outputs.build-config }}
+  nuget-source:
+    description: 'NuGet download feed for this branch type'
+    value: ${{ steps.set-vars.outputs.nuget-source }}
+  nuget-publish:
+    description: 'NuGet deployable publish feed for this branch type'
+    value: ${{ steps.set-vars.outputs.nuget-publish }}
+  nuget-library:
+    description: 'NuGet library publish feed for this branch type'
+    value: ${{ steps.set-vars.outputs.nuget-library }}
+
+runs:
+  using: 'composite'
+  steps:
+    - id: set-vars
+      shell: bash
+      env:
+        BRANCH_NAME: ${{ inputs.BRANCH_NAME }}
+        DEFAULT_VERSION: ${{ inputs.DEFAULT_VERSION }}
+        RUN_SUFFIX: ${{ github.run_number }}${{ github.run_attempt }}
+      run: |
+        set -euo pipefail
+
+        # Base version: x.y.z embedded in the branch name, else the default
+        if [[ "$BRANCH_NAME" =~ (feature|release)/([0-9]+\.[0-9]+\.[0-9]+) ]]; then
+          base_version="${BASH_REMATCH[2]}"
+        else
+          base_version="$DEFAULT_VERSION"
+        fi
+
+        if [[ "$BRANCH_NAME" == *feature/* ]]; then
+          build_type="dev"
+          build_config="Debug"
+          nuget_source='${{ inputs.NUGET_SOURCE_DEV }}'
+          nuget_publish='${{ inputs.NUGET_PUBLISH_DEV }}'
+          nuget_library='${{ inputs.NUGET_LIBRARY_DEV }}'
+
+          # Prerelease tag from the last branch segment (usually the ticket id),
+          # sanitized to valid semver2 identifier characters
+          tag=$(basename "$BRANCH_NAME" | tr '[:upper:]' '[:lower:]' | sed 's/[^0-9a-z-]/-/g')
+          if [[ -z "$tag" || "$tag" == "$(echo "$base_version" | sed 's/\./-/g')" ]]; then
+            version="${base_version}-dev.${RUN_SUFFIX}"
+          else
+            version="${base_version}-dev.${tag}.${RUN_SUFFIX}"
+          fi
+        else
+          build_type="rc"
+          build_config="Release"
+          nuget_source='${{ inputs.NUGET_SOURCE }}'
+          nuget_publish='${{ inputs.NUGET_PUBLISH }}'
+          nuget_library='${{ inputs.NUGET_LIBRARY }}'
+          version="${base_version}-rc.${RUN_SUFFIX}"
+        fi
+
+        echo "Branch:       $BRANCH_NAME"
+        echo "Version:      $version"
+        echo "Build type:   $build_type"
+        echo "Build config: $build_config"
+        echo "NuGet source: $nuget_source"
+        echo "NuGet publish: $nuget_publish"
+        echo "NuGet library: $nuget_library"
+
+        {
+          echo "version=$version"
+          echo "build-type=$build_type"
+          echo "build-config=$build_config"
+          echo "nuget-source=$nuget_source"
+          echo "nuget-publish=$nuget_publish"
+          echo "nuget-library=$nuget_library"
+        } >> "$GITHUB_OUTPUT"
