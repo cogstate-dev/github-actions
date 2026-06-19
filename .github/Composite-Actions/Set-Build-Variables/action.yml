@@ -36,6 +36,10 @@ inputs:
     description: 'NuGet library publish feed for feature branches'
     required: false
     default: 'https://proget.cogstate.com/nuget/cogstate-library-nuget-dev/'
+  NUGET_GITHUB_PACKAGES_LIBRARY:
+    description: 'NuGet GitHub packages library publish feed for default/release branches'
+    required: false
+    default: 'https://nuget.pkg.github.com/cogstate-dev/index.json'
 outputs:
   version:
     description: 'Full semver2 version, e.g. 1.2.3-dev.abc-123.41 or 1.2.3-rc.41'
@@ -55,6 +59,9 @@ outputs:
   nuget-library:
     description: 'NuGet library publish feed for this branch type'
     value: ${{ steps.set-vars.outputs.nuget-library }}
+  nuget-github-packages-library:
+    description: 'NuGet github packages library publish feed for this branch type'
+    value: ${{ steps.set-vars.outputs.nuget-github-packages-library }}
 
 runs:
   using: 'composite'
@@ -81,6 +88,7 @@ runs:
           nuget_source='${{ inputs.NUGET_SOURCE_DEV }}'
           nuget_publish='${{ inputs.NUGET_PUBLISH_DEV }}'
           nuget_library='${{ inputs.NUGET_LIBRARY_DEV }}'
+          nuget_github_packages_library='${{ inputs.NUGET_GITHUB_PACKAGES_LIBRARY }}'
 
           # Prerelease tag from the last branch segment (usually the ticket id),
           # sanitized to valid semver2 identifier characters
@@ -96,6 +104,7 @@ runs:
           nuget_source='${{ inputs.NUGET_SOURCE }}'
           nuget_publish='${{ inputs.NUGET_PUBLISH }}'
           nuget_library='${{ inputs.NUGET_LIBRARY }}'
+          nuget_github_packages_library='${{ inputs.NUGET_GITHUB_PACKAGES_LIBRARY }}'
           version="${base_version}-rc.${RUN_SUFFIX}"
         fi
 
@@ -106,6 +115,7 @@ runs:
         echo "NuGet source: $nuget_source"
         echo "NuGet publish: $nuget_publish"
         echo "NuGet library: $nuget_library"
+        echo "NuGet github packages library: $nuget_github_packages_library"
 
         {
           echo "version=$version"
@@ -114,4 +124,5 @@ runs:
           echo "nuget-source=$nuget_source"
           echo "nuget-publish=$nuget_publish"
           echo "nuget-library=$nuget_library"
+          echo "nuget-github-packages-library=$nuget_github_packages_library"
         } >> "$GITHUB_OUTPUT"
